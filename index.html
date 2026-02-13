@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Loudspeaker: Thought Constellation</title>
+    <style>
+        :root {
+            --bg-color: #050510;
+            --text-color: #e0e0e0;
+            --panel-bg: rgba(10, 15, 30, 0.85);
+            --border-color: rgba(255, 255, 255, 0.1);
+            
+            /* Theme Colors */
+            --color-creativity: #00f2ff; /* Cyan */
+            --color-rights: #ff4757;     /* Red */
+            --color-democracy: #ffa502;  /* Orange */
+            --color-data: #2ed573;       /* Green */
+            --color-equity: #ff6b81;     /* Pink */
+            --color-economy: #a55eea;    /* Purple */
+            --color-policy: #f1c40f;     /* Yellow */
+            --color-environment: #1e90ff;/* Blue */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace; /* Monospace for raw manifesto feel */
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* UI Overlay */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none; /* Let clicks pass through to canvas */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
+        }
+
+        header {
+            pointer-events: auto;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: var(--panel-bg);
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
+            border-radius: 4px;
+            pointer-events: auto;
+            transition: opacity 1s;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .legend-item:hover { background: rgba(255,255,255,0.1); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* Loudspeaker Panel (Bottom Right) */
+        #loudspeaker-panel {
+            pointer-events: auto;
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            width: 450px;
+            max-width: 90vw;
+            /* Improved readability background */
+            background: rgba(5, 10, 20, 0.95); 
+            border: 1px solid var(--text-color);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            transform: translateY(0);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* Ensure it handles long text gracefully */
+            max-height: 80vh; 
+            z-index: 100;
+        }
+
+        #loudspeaker-panel.hidden {
+            transform: translateY(150%);
+        }
+
+        .panel-header {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        #thought-category { font-weight: bold; }
+
+        #thought-display {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            min-height: 100px;
+            overflow-y: auto; /* Scroll if text is long */
+            padding-right: 10px;
+        }
+
+        /* Custom scrollbar styling */
+        #thought-display::-webkit-scrollbar { width: 6px; }
+        #thought-display::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        #thought-display::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+        .instruction {
+            font-size: 0.8rem;
+            opacity: 0.5;
+            text-align: center;
+            margin-top: 1rem;
+            font-style: italic;
+            flex-shrink: 0;
+        }
+
+        /* Final Slogan Container (Hidden initially) */
+        #final-slogan-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 3s ease-in;
+            z-index: 0; /* Behind particles */
+            pointer-events: none;
+            width: 100%;
+        }
+
+        #final-slogan-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 900;
+            font-size: 5vw; /* Responsive font size */
+            color: rgba(255, 255, 255, 0.15); /* Very faint background guide */
+            line-height: 1.2;
+            white-space: pre-wrap;
+        }
+
+        /* Tooltip */
+        #tooltip {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid white;
+            padding: 8px;
+            font-size: 12px;
+            max-width: 200px;
+            display: none;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            #loudspeaker-panel {
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                border-bottom: none;
+                max-height: 50vh;
+            }
+            .legend { display: none; } /* Hide legend on mobile to save space */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="final-slogan-container">
+        <div id="final-slogan-text">WORKERS'<br>GOVERNING<br>TECHNOLOGY</div>
+    </div>
+
+    <div id="canvas-container">
+        <canvas id="constellation-canvas"></canvas>
+    </div>
+
+    <div id="ui-layer">
+        <header>
+            <h1>The Loudspeaker</h1>
+            <div class="subtitle">Mapping Our Participants' Perspectives and Collective Consciousness</div>
+            
+            <div class="legend" id="main-legend">
+                <div class="legend-item" onclick="filterNodes('creativity')"><div class="dot" style="background:var(--color-creativity)"></div>Creativity & Autonomy</div>
+                <div class="legend-item" onclick="filterNodes('rights')"><div class="dot" style="background:var(--color-rights)"></div>Rights & Solidarity</div>
+                <div class="legend-item" onclick="filterNodes('democracy')"><div class="dot" style="background:var(--color-democracy)"></div>Workplace Democracy</div>
+                <div class="legend-item" onclick="filterNodes('data')"><div class="dot" style="background:var(--color-data)"></div>Data & Commons</div>
+                <div class="legend-item" onclick="filterNodes('equity')"><div class="dot" style="background:var(--color-equity)"></div>Equity & Wellbeing</div>
+                <div class="legend-item" onclick="filterNodes('economy')"><div class="dot" style="background:var(--color-economy)"></div>Alternative Economy</div>
+                <div class="legend-item" onclick="filterNodes('policy')"><div class="dot" style="background:var(--color-policy)"></div>Policy & Advocacy</div>
+                <div class="legend-item" onclick="filterNodes('environment')"><div class="dot" style="background:var(--color-environment)"></div>Environment</div>
+            </div>
+        </header>
+
+        <div id="loudspeaker-panel" class="hidden">
+            <div class="panel-header">
+                <span>Broadcast Signal</span>
+                <span id="thought-category">THEME</span>
+            </div>
+            <div id="thought-display">
+                Hover over a node to preview. Click to lock signal.
+            </div>
+            <div class="instruction">
+                <span id="close-panel-btn" style="cursor:pointer; text-decoration:underline;">[CLOSE TRANSMISSION]</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip"></div>
+
+    <script>
+        // --- DATA & CONFIG ---
+        
+        const themes = {
+            creativity: { color: '#00f2ff', label: 'Creativity & Autonomy' },
+            rights: { color: '#ff4757', label: 'Rights, Governance & Solidarity' },
+            democracy: { color: '#ffa502', label: 'Workplace Democracy' },
+            data: { color: '#2ed573', label: 'Data, Research & Commons' },
+            equity: { color: '#ff6b81', label: 'Equity & Inclusion' },
+            economy: { color: '#a55eea', label: 'Alternative Economy' },
+            policy: { color: '#f1c40f', label: 'Policy & Advocacy' },
+            environment: { color: '#1e90ff', label: 'Environment' }
+        };
+
+        function cleanText(text) {
+            return text
+                .replace(/some of us\s*lcome/gi, "welcome")
+                .replace(/some of us\s*r/gi, "power")
+                .replace(/betsome of us\s*en/gi, "between")
+                .replace(/some of us\s*llbeing/gi, "wellbeing")
+                .replace(/outsome of us\s*ighs/gi, "outweighs")
+                .replace(/some of us/gi, "We"); 
+        }
+
+        const rawData = [
+            { t: "creativity", text: "A writer can only be identified as a human being. Technology is a tool, never the creator." },
+            { t: "creativity", text: "AI must never be pushed on a worker. It is our choice to use it." },
+            { t: "economy", text: "We reject the narrative that AI is 'inevitable.' Profits for the few do not justify the exploitation of the many." },
+            { t: "rights", text: "We reject the 'inevitability' of technology that depends on the theft of our labour." },
+            { t: "rights", text: "We demand compensation and consent for the use of our archives." },
+            { t: "policy", text: "Government deregulation should not be a tool for corporations to bypass union contracts." },
+            { t: "policy", text: "We welcome solidarity and expertise to strengthen our in-house policy capacity." },
+            { t: "environment", text: "Majority world cannot be the 'sacrificial zones' for Data centre expansions." },
+            { t: "environment", text: "Innovation cannot run on the environmental ruin of our small towns." },
+            { t: "environment", text: "The right of our community to access drinking water outweighs the right of a tech company to train a dataset." },
+            { t: "data", text: "We demand the immediate enforcement of data protection and IP laws." },
+            { t: "rights", text: "Artists, academics, environmentalists, and all citizens stand united against corporate encroachment." },
+            { t: "creativity", text: "We refuse to let our active creativity be reduced to data points used against us." },
+            { t: "data", text: "Transparency in worker data: what is collected, why, and how it is used." },
+            { t: "democracy", text: "Fair profits through transparent productivity metrics." },
+            { t: "rights", text: "Workers must have the right to refuse tasks assigned by an algorithm without fear of sanction." },
+            { t: "democracy", text: "We demand the right to see and negotiate the metrics used to estimate worker productivity." },
+            { t: "democracy", text: "Stopping automated punishments on workers; human review is mandatory." },
+            { t: "democracy", text: "Establish joint committees on health, safety and technology." },
+            { t: "data", text: "Data sovereignty: core digital infrastructures must be managed as public goods." },
+            { t: "rights", text: "We will call out corporations that use AI as a convenient excuse for job cuts." },
+            { t: "democracy", text: "We resolve to build our own technical resources to strengthen union organization." },
+            { t: "equity", text: "We reject the divide between 'high-skill' workers and 'low-skill' workers." },
+            { t: "rights", text: "Mergers must sign neutrality agreements that prevent interference with our right to organize." },
+            { t: "democracy", text: "Checklists to monitor every workplace for unreported software deployments." },
+            { t: "democracy", text: "We demand a notice period for any technological change in our workplace." },
+            { t: "economy", text: "We promote open-source software (like CoopCycle) that belongs to the workers." },
+            { t: "equity", text: "We commit to anti-harassment protocols and promoting leadership roles for women and gender-diverse individuals." },
+            { t: "economy", text: "Building worker-owned platform cooperatives to replace big tech." },
+            { t: "economy", text: "We strive to build a fully alternative economy with our own credit unions and social safety nets." },
+            { t: "democracy", text: "We use the union as a vital resource for conflict resolution." },
+            { t: "creativity", text: "We demand an economy that provides artists with the mental space to be creative." },
+            { t: "rights", text: "We declare internet access a fundamental human right." },
+            { t: "policy", text: "We prioritize secure, internal applications to protect social movements from surveillance." },
+            { t: "economy", text: "We reject the predatory nature of gig apps; gig workers are workers, not contractors." },
+            { t: "economy", text: "When private owners abandon companies, workers have a right to the technical support to reclaim them." },
+            { t: "data", text: "We reject 'one-size-fits-all' software models. We champion tools that reflect plural realities." },
+            { t: "data", text: "Translation of academic research into practical technical assistance for the worker on the shop floor." },
+            { t: "economy", text: "We reject the 'rent extraction' model where outside investors skim value from creators." },
+            { t: "data", text: "Data systems must preserve the right to be forgotten and the right to be credited." },
+            { t: "equity", text: "We acknowledge the systemic exclusion of trans people from formal education." },
+            { t: "equity", text: "We assert that people performing data labeling are the primary experts on AI harms." },
+            { t: "data", text: "We move beyond being 'documented' by academics to identifying our own issues (worker inquiry)." },
+            { t: "democracy", text: "Inter-cooperation to create safe environments for junior members to learn." },
+            { t: "creativity", text: "We 'dare to desire' new forms of technology that prioritize human joy and rest." },
+            { t: "data", text: "We reject proprietary licensing and embrace Creative Commons." },
+            { t: "policy", text: "We use collective knowledge to influence legislators for public policies that protect the solidarity economy." },
+            { t: "policy", text: "The state must investigate the 'black box' of platform algorithms." },
+            { t: "policy", text: "Demand that platform policies be written in the native language of the workers." }
+        ];
+
+        const slogans = [
+            { t: "creativity", text: "WE ARE NOT DATA POINTS" },
+            { t: "rights", text: "THE RIGHT TO REFUSE" },
+            { t: "environment", text: "WATER > DATA CENTERS" },
+            { t: "democracy", text: "NO ALGORITHMIC MANAGERS" },
+            { t: "data", text: "DATA SOVEREIGNTY" },
+            { t: "economy", text: "WORKER-OWNED PLATFORMS" },
+            { t: "policy", text: "OPEN THE BLACK BOX" },
+            { t: "equity", text: "NOTHING ABOUT US WITHOUT US" },
+            { t: "economy", text: "PUBLIC GOODS, NOT MONOPOLIES" },
+            { t: "creativity", text: "REST IS RESISTANCE" },
+            { t: "rights", text: "OUR ARCHIVES, OUR CHOICE" },
+            { t: "policy", text: "INNOVATION NOT EXPLOITATION" }
+        ];
+
+        // --- SIMULATION SETUP ---
+
+        const canvas = document.getElementById('constellation-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        // State Variables
+        const START_TIME = Date.now();
+        const TRANSITION_DELAY = 60000; // 60 Seconds
+        let currentMode = 'constellation'; // 'constellation' or 'slogan'
+
+        // Particle System
+        let nodes = [];
+        const connectionsDistance = 180;
+        const equilibriumDistance = 120;
+        const mouseDistance = 200;
+
+        // Interaction State
+        const mouse = { x: null, y: null };
+        let activeFilter = null;
+        let selectedNode = null;
+
+        // Initialize Data
+        function initData() {
+            nodes = [];
+
+            // 1. Add Standard Thoughts
+            rawData.forEach(item => {
+                nodes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.1,
+                    vy: (Math.random() - 0.5) * 0.1,
+                    text: cleanText(item.text),
+                    category: item.t,
+                    color: themes[item.t].color,
+                    radius: Math.random() * 2 + 2,
+                    isSlogan: false,
+                    hovered: false,
+                    targetX: null, // For text formation
+                    targetY: null
+                });
+            });
+
+            // 2. Add Major Slogan Nodes
+            slogans.forEach(item => {
+                nodes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.05,
+                    vy: (Math.random() - 0.5) * 0.05,
+                    text: item.text,
+                    category: item.t,
+                    color: themes[item.t].color,
+                    radius: 7, 
+                    isSlogan: true,
+                    hovered: false,
+                    targetX: null,
+                    targetY: null
+                });
+            });
+        }
+
+        // --- SLOGAN FORMATION LOGIC ---
+
+        function calculateSloganTargets() {
+            // 1. Create temporary canvas to rasterize text
+            const tempCanvas = document.createElement('canvas');
+            const tCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+
+            // 2. Settings matching the visible HTML overlay
+            tCtx.fillStyle = 'white';
+            tCtx.font = '900 ' + (width * 0.05) + 'px Courier New'; // Match CSS 5vw
+            tCtx.textAlign = 'center';
+            tCtx.textBaseline = 'middle';
+            
+            // 3. Draw Text
+            const lines = ["WORKERS'", "GOVERNING", "TECHNOLOGY"];
+            const lineHeight = width * 0.06;
+            const startY = height / 2 - lineHeight;
+            
+            lines.forEach((line, i) => {
+                tCtx.fillText(line, width / 2, startY + (i * lineHeight));
+            });
+
+            // 4. Sample Pixels
+            const imageData = tCtx.getImageData(0, 0, width, height).data;
+            let validPoints = [];
+            const step = 8; // skip pixels to save performance
+
+            for (let y = 0; y < height; y += step) {
+                for (let x = 0; x < width; x += step) {
+                    const alpha = imageData[((y * width + x) * 4) + 3];
+                    if (alpha > 128) {
+                        validPoints.push({x: x, y: y});
+                    }
+                }
+            }
+
+            // 5. Shuffle points for random assignment
+            validPoints.sort(() => Math.random() - 0.5);
+
+            // 6. Assign targets to nodes
+            nodes.forEach((node, i) => {
+                // If we have points, assign. If not (unlikely if screen big enough), center.
+                if (i < validPoints.length) {
+                    node.targetX = validPoints[i].x;
+                    node.targetY = validPoints[i].y;
+                } else {
+                    // Fallback if not enough points sampled: random point on existing list
+                    const fallback = validPoints[Math.floor(Math.random() * validPoints.length)];
+                    node.targetX = fallback ? fallback.x : width/2;
+                    node.targetY = fallback ? fallback.y : height/2;
+                }
+            });
+
+            // 7. Show Background Text
+            document.getElementById('final-slogan-container').style.opacity = '1';
+            
+            // 8. Hide Legend to clear clutter
+            document.getElementById('main-legend').style.opacity = '0';
+        }
+
+        // Resize Handling
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            if(nodes.length === 0) initData();
+            
+            // If in slogan mode, recalc targets on resize
+            if (currentMode === 'slogan') {
+                 calculateSloganTargets();
+            }
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- PHYSICS & RENDERING ---
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, width, height);
+
+            // Check Timer
+            if (currentMode === 'constellation' && Date.now() - START_TIME > TRANSITION_DELAY) {
+                currentMode = 'slogan';
+                calculateSloganTargets();
+                console.log("Triggering Slogan Mode");
+            }
+
+            ctx.lineWidth = 0.5;
+            
+            for (let i = 0; i < nodes.length; i++) {
+                let p1 = nodes[i];
+                
+                // Skip if filtered out
+                if (activeFilter && p1.category !== activeFilter) {
+                    continue; 
+                }
+
+                // --- BEHAVIOR 1: CONSTELLATION MODE ---
+                if (currentMode === 'constellation') {
+                    
+                    // Connection Lines
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        let p2 = nodes[j];
+                        if (p1.category === p2.category) {
+                            let dx = p2.x - p1.x;
+                            let dy = p2.y - p1.y;
+                            let dist = Math.sqrt(dx*dx + dy*dy);
+
+                            if (dist < connectionsDistance) {
+                                let opacity = 1 - (dist / connectionsDistance);
+                                ctx.strokeStyle = `rgba(${hexToRgb(p1.color)}, ${opacity * 0.4})`;
+                                ctx.beginPath();
+                                ctx.moveTo(p1.x, p1.y);
+                                ctx.lineTo(p2.x, p2.y);
+                                ctx.stroke();
+
+                                // Spring Force
+                                const forceStrength = 0.00005;
+                                const displacement = dist - equilibriumDistance;
+                                const nx = dx / dist;
+                                const ny = dy / dist;
+                                const fx = nx * displacement * forceStrength;
+                                const fy = ny * displacement * forceStrength;
+
+                                p1.vx += fx;
+                                p1.vy += fy;
+                                p2.vx -= fx;
+                                p2.vy -= fy;
+                            }
+                        }
+                    }
+
+                    // Mouse Repel
+                    if (mouse.x != null) {
+                        let dx = mouse.x - p1.x;
+                        let dy = mouse.y - p1.y;
+                        let dist = Math.sqrt(dx*dx + dy*dy);
+                        
+                        if (dist < mouseDistance) {
+                            const force = (mouseDistance - dist) / mouseDistance;
+                            const fx = (dx / dist) * force * 0.5;
+                            const fy = (dy / dist) * force * 0.5;
+                            p1.vx -= fx;
+                            p1.vy -= fy;
+                        }
+                    }
+
+                    // Gentle Gravity
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    p1.vx += (centerX - p1.x) * 0.00002;
+                    p1.vy += (centerY - p1.y) * 0.00002;
+
+                } 
+                // --- BEHAVIOR 2: SLOGAN MODE ---
+                else if (currentMode === 'slogan' && p1.targetX !== null) {
+                    
+                    // Move towards target
+                    const dx = p1.targetX - p1.x;
+                    const dy = p1.targetY - p1.y;
+                    
+                    // Strong Pull
+                    p1.vx += dx * 0.005;
+                    p1.vy += dy * 0.005;
+                    
+                    // No lines, No mouse interaction (locked in formation)
+                }
+
+                // Friction
+                if (currentMode === 'constellation') {
+                    p1.vx *= 0.99;
+                    p1.vy *= 0.99;
+                } else {
+                    p1.vx *= 0.92; // Higher friction to stop snapping
+                    p1.vy *= 0.92;
+                }
+
+                // Update Position
+                p1.x += p1.vx;
+                p1.y += p1.vy;
+
+                // Boundary bounce (Only in constellation mode)
+                if (currentMode === 'constellation') {
+                    if (p1.x < 0 || p1.x > width) p1.vx *= -1;
+                    if (p1.y < 0 || p1.y > height) p1.vy *= -1;
+                }
+
+                // Draw Node
+                let isDimmed = activeFilter && p1.category !== activeFilter;
+                
+                ctx.beginPath();
+                ctx.arc(p1.x, p1.y, isDimmed ? 1 : p1.radius, 0, Math.PI * 2);
+                
+                if (p1.hovered || p1 === selectedNode) {
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = p1.color;
+                    ctx.fillStyle = '#ffffff';
+                } else {
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = isDimmed ? '#333' : p1.color;
+                }
+                
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Draw Text Labels (Only in Constellation Mode)
+                if (currentMode === 'constellation' && p1.isSlogan && !isDimmed) {
+                    ctx.font = 'bold 11px Courier New';
+                    ctx.fillStyle = p1.color;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(p1.text, p1.x, p1.y - 14);
+                }
+                // In Slogan mode, we hide the node text labels to avoid cluttering the big word shape
+            }
+        }
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 255, 255';
+        }
+
+        // --- EVENTS ---
+
+        canvas.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            
+            let hovering = false;
+            let tooltip = document.getElementById('tooltip');
+
+            nodes.forEach(node => {
+                let dx = mouse.x - node.x;
+                let dy = mouse.y - node.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                const hitDist = node.isSlogan ? 30 : 20;
+
+                if (dist < hitDist) {
+                    node.hovered = true;
+                    hovering = true;
+                    
+                    // Show tooltip if not slogan and valid mode
+                    if (!node.isSlogan && currentMode === 'constellation') {
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (e.clientX + 15) + 'px';
+                        tooltip.style.top = (e.clientY + 15) + 'px';
+                        tooltip.innerText = themes[node.category].label;
+                        tooltip.style.borderColor = node.color;
+                    }
+                } else {
+                    node.hovered = false;
+                }
+            });
+
+            if (!hovering) tooltip.style.display = 'none';
+            // Set cursor pointer
+            canvas.style.cursor = hovering ? 'pointer' : 'default';
+        });
+
+        canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+
+        canvas.addEventListener('click', (e) => {
+            nodes.forEach(node => {
+                let dx = e.clientX - node.x;
+                let dy = e.clientY - node.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                const hitDist = node.isSlogan ? 30 : 20;
+
+                if (dist < hitDist) {
+                    selectedNode = node;
+                    displayThought(node);
+                }
+            });
+        });
+
+        const panel = document.getElementById('loudspeaker-panel');
+        const thoughtDisplay = document.getElementById('thought-display');
+        const categoryDisplay = document.getElementById('thought-category');
+        const closeBtn = document.getElementById('close-panel-btn');
+
+        function displayThought(node) {
+            panel.classList.remove('hidden');
+            categoryDisplay.innerText = themes[node.category].label;
+            categoryDisplay.style.color = node.color;
+            thoughtDisplay.style.opacity = 0;
+            setTimeout(() => {
+                thoughtDisplay.innerHTML = `"${node.text}"`;
+                thoughtDisplay.style.opacity = 1;
+                thoughtDisplay.style.transition = "opacity 0.3s";
+            }, 100);
+            panel.style.boxShadow = `0 0 30px ${node.color}40`;
+            panel.style.borderColor = node.color;
+        }
+
+        function closePanel() {
+            panel.classList.add('hidden');
+            selectedNode = null;
+        }
+
+        closeBtn.addEventListener('click', closePanel);
+
+        window.filterNodes = function(category) {
+            if (activeFilter === category) {
+                activeFilter = null;
+            } else {
+                activeFilter = category;
+            }
+        }
+
+        animate();
+
+    </script>
+</body>
+</html>
