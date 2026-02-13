@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workers' Thought Constellation</title>
+    <title>The Workers' Thought Constellation</title>
     <style>
         :root {
             --bg-color: #050510;
@@ -104,8 +104,8 @@
         .legend-item:hover { background: rgba(255,255,255,0.1); }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        /* Workers' Thought Constellation Panel (Bottom Right) */
-        #Workers' Thought Constellation-panel {
+        /* Loudspeaker Panel (Bottom Right) */
+        #loudspeaker-panel {
             pointer-events: auto;
             position: absolute;
             bottom: 2rem;
@@ -129,7 +129,7 @@
             z-index: 100;
         }
 
-        #Workers' Thought Constellation-panel.hidden {
+        #loudspeaker-panel.hidden {
             transform: translateY(150%);
         }
 
@@ -205,7 +205,7 @@
         }
 
         @media (max-width: 768px) {
-            #Workers' Thought Constellation-panel {
+            #loudspeaker-panel {
                 bottom: 0;
                 right: 0;
                 width: 100%;
@@ -228,8 +228,8 @@
 
     <div id="ui-layer">
         <header>
-            <h1>The Workers' Thought Constellation</h1>
-            <div class="subtitle">Mapping Our Participants' Perspectives </div>
+            <h1>THE WORKERS' THOUGHT CONSTELLATION</h1>
+            <div class="subtitle">Mapping Our Participants' Perspectives</div>
             
             <div class="legend" id="main-legend">
                 <div class="legend-item" onclick="filterNodes('creativity')"><div class="dot" style="background:var(--color-creativity)"></div>Creativity & Autonomy</div>
@@ -243,7 +243,7 @@
             </div>
         </header>
 
-        <div id="Workers' Thought Constellation-panel" class="hidden">
+        <div id="loudspeaker-panel" class="hidden">
             <div class="panel-header">
                 <span>Broadcast Signal</span>
                 <span id="thought-category">THEME</span>
@@ -358,12 +358,13 @@
 
         // State Variables
         const START_TIME = Date.now();
-        const TRANSITION_DELAY = 60000; // 30 Seconds
+        const TRANSITION_DELAY = 60000; // 60 Seconds
         let currentMode = 'constellation'; // 'constellation' or 'slogan'
 
         // Particle System
         let nodes = [];
-        const connectionsDistance = 180;
+        const TARGET_NODE_COUNT = 350; // Increased for density
+        const connectionsDistance = 140; // Slightly reduced to prevent clutter with more nodes
         const equilibriumDistance = 120;
         const mouseDistance = 200;
 
@@ -376,25 +377,7 @@
         function initData() {
             nodes = [];
 
-            // 1. Add Standard Thoughts
-            rawData.forEach(item => {
-                nodes.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    vx: (Math.random() - 0.5) * 0.1,
-                    vy: (Math.random() - 0.5) * 0.1,
-                    text: cleanText(item.text),
-                    category: item.t,
-                    color: themes[item.t].color,
-                    radius: Math.random() * 2 + 2,
-                    isSlogan: false,
-                    hovered: false,
-                    targetX: null, // For text formation
-                    targetY: null
-                });
-            });
-
-            // 2. Add Major Slogan Nodes
+            // 1. Add Major Slogan Nodes First (Priority)
             slogans.forEach(item => {
                 nodes.push({
                     x: Math.random() * width,
@@ -411,6 +394,28 @@
                     targetY: null
                 });
             });
+
+            // 2. Fill the rest with Standard Thoughts (Cycling through data)
+            let dataIndex = 0;
+            while (nodes.length < TARGET_NODE_COUNT) {
+                const item = rawData[dataIndex % rawData.length];
+                nodes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.1,
+                    vy: (Math.random() - 0.5) * 0.1,
+                    text: cleanText(item.text),
+                    category: item.t,
+                    color: themes[item.t].color,
+                    // Variable radius for depth
+                    radius: Math.random() * 2 + 1.5,
+                    isSlogan: false,
+                    hovered: false,
+                    targetX: null, // For text formation
+                    targetY: null
+                });
+                dataIndex++;
+            }
         }
 
         // --- SLOGAN FORMATION LOGIC ---
@@ -440,7 +445,8 @@
             // 4. Sample Pixels
             const imageData = tCtx.getImageData(0, 0, width, height).data;
             let validPoints = [];
-            const step = 8; // skip pixels to save performance
+            // Reduced step size to get MORE points for the increased node count
+            const step = 5; 
 
             for (let y = 0; y < height; y += step) {
                 for (let x = 0; x < width; x += step) {
@@ -456,15 +462,22 @@
 
             // 6. Assign targets to nodes
             nodes.forEach((node, i) => {
-                // If we have points, assign. If not (unlikely if screen big enough), center.
+                // If we have points, assign. 
                 if (i < validPoints.length) {
                     node.targetX = validPoints[i].x;
                     node.targetY = validPoints[i].y;
                 } else {
-                    // Fallback if not enough points sampled: random point on existing list
-                    const fallback = validPoints[Math.floor(Math.random() * validPoints.length)];
-                    node.targetX = fallback ? fallback.x : width/2;
-                    node.targetY = fallback ? fallback.y : height/2;
+                    // Fallback: if we ran out of unique points, stack on existing ones
+                    // This ensures no node is left floating
+                    const fallback = validPoints[i % validPoints.length];
+                    if (fallback) {
+                        node.targetX = fallback.x;
+                        node.targetY = fallback.y;
+                    } else {
+                        // Extreme fallback
+                        node.targetX = width/2;
+                        node.targetY = height/2;
+                    }
                 }
             });
 
@@ -690,7 +703,7 @@
             });
         });
 
-        const panel = document.getElementById('Workers' Thought Constellation-panel');
+        const panel = document.getElementById('loudspeaker-panel');
         const thoughtDisplay = document.getElementById('thought-display');
         const categoryDisplay = document.getElementById('thought-category');
         const closeBtn = document.getElementById('close-panel-btn');
