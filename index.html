@@ -8,10 +8,10 @@
         :root {
             --bg-color: #050510;
             --text-color: #e0e0e0;
-            --panel-bg: rgba(10, 15, 30, 0.85);
-            --border-color: rgba(255, 255, 255, 0.1);
+            --panel-bg: rgba(10, 15, 30, 0.9);
+            --border-color: rgba(255, 255, 255, 0.15);
             
-            /* Theme Colors */
+            /* Theme Colors - Slightly brightened for clarity */
             --color-creativity: #00f2ff; /* Cyan */
             --color-rights: #ff4757;     /* Red */
             --color-democracy: #ffa502;  /* Orange */
@@ -27,7 +27,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace; /* Monospace for raw manifesto feel */
+            font-family: 'Courier New', Courier, monospace; 
             overflow: hidden;
             width: 100vw;
             height: 100vh;
@@ -50,7 +50,7 @@
             width: 100%;
             height: 100%;
             z-index: 2;
-            pointer-events: none; /* Let clicks pass through to canvas */
+            pointer-events: none; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -60,51 +60,83 @@
         header {
             pointer-events: auto;
             max-width: 600px;
+            background: radial-gradient(circle at top left, rgba(5,5,16,0.8) 0%, transparent 70%);
+            padding: 20px;
+            border-radius: 8px;
         }
 
         h1 {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+            line-height: 1.2;
         }
 
         .subtitle {
             font-size: 0.9rem;
-            opacity: 0.7;
+            opacity: 0.8;
             margin-bottom: 1.5rem;
+            border-left: 2px solid var(--color-creativity);
+            padding-left: 10px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover, .btn.active {
+            background: white;
+            color: black;
+            border-color: white;
         }
 
         /* Legend */
         .legend {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            background: var(--panel-bg);
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
-            border-radius: 4px;
+            gap: 8px;
             pointer-events: auto;
-            transition: opacity 1s;
+            transition: opacity 0.5s;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
-            padding: 2px 6px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid transparent;
             border-radius: 4px;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
-        .legend-item:hover { background: rgba(255,255,255,0.1); }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .legend-item:hover { 
+            background: rgba(255,255,255,0.15); 
+            border-color: rgba(255,255,255,0.3);
+        }
+        .dot { width: 6px; height: 6px; border-radius: 50%; }
 
-        /* Loudspeaker Panel (Bottom Right) */
+        /* Loudspeaker Panel */
         #loudspeaker-panel {
             pointer-events: auto;
             position: absolute;
@@ -112,63 +144,63 @@
             right: 2rem;
             width: 450px;
             max-width: 90vw;
-            /* Improved readability background */
-            background: rgba(5, 10, 20, 0.95); 
-            border: 1px solid var(--text-color);
+            background: var(--panel-bg); 
+            border: 1px solid var(--border-color);
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             transform: translateY(0);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            
-            /* Ensure it handles long text gracefully */
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             max-height: 80vh; 
             z-index: 100;
         }
 
         #loudspeaker-panel.hidden {
-            transform: translateY(150%);
+            transform: translateY(120%);
         }
 
         .panel-header {
             font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.8rem;
             display: flex;
             justify-content: space-between;
             flex-shrink: 0;
+            color: rgba(255,255,255,0.6);
         }
 
-        #thought-category { font-weight: bold; }
+        #thought-category { font-weight: bold; color: white; }
 
         #thought-display {
             font-size: 1.1rem;
             line-height: 1.6;
-            min-height: 100px;
-            overflow-y: auto; /* Scroll if text is long */
+            min-height: 80px;
+            overflow-y: auto;
             padding-right: 10px;
         }
-
-        /* Custom scrollbar styling */
-        #thought-display::-webkit-scrollbar { width: 6px; }
-        #thought-display::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-        #thought-display::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        
+        /* Styled Scrollbar */
+        #thought-display::-webkit-scrollbar { width: 4px; }
+        #thought-display::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        #thought-display::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); }
 
         .instruction {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             opacity: 0.5;
-            text-align: center;
-            margin-top: 1rem;
-            font-style: italic;
-            flex-shrink: 0;
+            text-align: right;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
         }
+        .instruction:hover { opacity: 1; text-decoration: underline; }
 
-        /* Final Slogan Container (Hidden initially) */
+        /* Final Slogan Backdrop */
         #final-slogan-container {
             position: absolute;
             top: 50%;
@@ -176,32 +208,34 @@
             transform: translate(-50%, -50%);
             text-align: center;
             opacity: 0;
-            transition: opacity 3s ease-in;
-            z-index: 0; /* Behind particles */
+            transition: opacity 2s ease-in-out;
+            z-index: 0; 
             pointer-events: none;
             width: 100%;
         }
 
         #final-slogan-text {
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Inter', system-ui, sans-serif; /* Cleaner font for the backdrop */
             font-weight: 900;
-            font-size: 5vw; /* Responsive font size */
-            color: rgba(255, 255, 255, 0.15); /* Very faint background guide */
-            line-height: 1.2;
+            font-size: 5vw; 
+            color: rgba(255, 255, 255, 0.3); /* Higher opacity for better legibility */
+            line-height: 1.1;
             white-space: pre-wrap;
+            letter-spacing: -2px;
         }
 
         /* Tooltip */
         #tooltip {
             position: absolute;
             pointer-events: none;
-            background: rgba(0,0,0,0.8);
-            border: 1px solid white;
-            padding: 8px;
-            font-size: 12px;
-            max-width: 200px;
+            background: rgba(10, 15, 30, 0.95);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            max-width: 250px;
             display: none;
             z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         @media (max-width: 768px) {
@@ -212,7 +246,9 @@
                 border-bottom: none;
                 max-height: 50vh;
             }
-            .legend { display: none; } /* Hide legend on mobile to save space */
+            .legend { display: none; }
+            h1 { font-size: 1.4rem; }
+            #final-slogan-text { font-size: 8vw; }
         }
     </style>
 </head>
@@ -231,28 +267,33 @@
             <h1>THE WORKERS' THOUGHT CONSTELLATION</h1>
             <div class="subtitle">Mapping Our Participants' Perspectives</div>
             
+            <div class="controls">
+                <button class="btn active" id="btn-constellation" onclick="setMode('constellation')">Constellation</button>
+                <button class="btn" id="btn-slogan" onclick="setMode('slogan')">The Demand</button>
+            </div>
+
             <div class="legend" id="main-legend">
-                <div class="legend-item" onclick="filterNodes('creativity')"><div class="dot" style="background:var(--color-creativity)"></div>Creativity & Autonomy</div>
-                <div class="legend-item" onclick="filterNodes('rights')"><div class="dot" style="background:var(--color-rights)"></div>Rights & Solidarity</div>
-                <div class="legend-item" onclick="filterNodes('democracy')"><div class="dot" style="background:var(--color-democracy)"></div>Workplace Democracy</div>
-                <div class="legend-item" onclick="filterNodes('data')"><div class="dot" style="background:var(--color-data)"></div>Data & Commons</div>
-                <div class="legend-item" onclick="filterNodes('equity')"><div class="dot" style="background:var(--color-equity)"></div>Equity & Wellbeing</div>
-                <div class="legend-item" onclick="filterNodes('economy')"><div class="dot" style="background:var(--color-economy)"></div>Alternative Economy</div>
-                <div class="legend-item" onclick="filterNodes('policy')"><div class="dot" style="background:var(--color-policy)"></div>Policy & Advocacy</div>
+                <div class="legend-item" onclick="filterNodes('creativity')"><div class="dot" style="background:var(--color-creativity)"></div>Creativity</div>
+                <div class="legend-item" onclick="filterNodes('rights')"><div class="dot" style="background:var(--color-rights)"></div>Rights</div>
+                <div class="legend-item" onclick="filterNodes('democracy')"><div class="dot" style="background:var(--color-democracy)"></div>Democracy</div>
+                <div class="legend-item" onclick="filterNodes('data')"><div class="dot" style="background:var(--color-data)"></div>Data</div>
+                <div class="legend-item" onclick="filterNodes('equity')"><div class="dot" style="background:var(--color-equity)"></div>Equity</div>
+                <div class="legend-item" onclick="filterNodes('economy')"><div class="dot" style="background:var(--color-economy)"></div>Economy</div>
+                <div class="legend-item" onclick="filterNodes('policy')"><div class="dot" style="background:var(--color-policy)"></div>Policy</div>
                 <div class="legend-item" onclick="filterNodes('environment')"><div class="dot" style="background:var(--color-environment)"></div>Environment</div>
             </div>
         </header>
 
         <div id="loudspeaker-panel" class="hidden">
             <div class="panel-header">
-                <span>Broadcast Signal</span>
+                <span>Signal Received</span>
                 <span id="thought-category">THEME</span>
             </div>
             <div id="thought-display">
                 Hover over a node to preview. Click to lock signal.
             </div>
-            <div class="instruction">
-                <span id="close-panel-btn" style="cursor:pointer; text-decoration:underline;">[CLOSE TRANSMISSION]</span>
+            <div class="instruction" id="close-panel-btn">
+                [CLOSE TRANSMISSION]
             </div>
         </div>
     </div>
@@ -358,13 +399,13 @@
 
         // State Variables
         const START_TIME = Date.now();
-        const TRANSITION_DELAY = 60000; // 60 Seconds
-        let currentMode = 'constellation'; // 'constellation' or 'slogan'
+        const TRANSITION_DELAY = 60000; 
+        let currentMode = 'constellation'; 
 
         // Particle System
         let nodes = [];
-        const TARGET_NODE_COUNT = 350; // Increased for density
-        const connectionsDistance = 140; // Slightly reduced to prevent clutter with more nodes
+        const TARGET_NODE_COUNT = 500; // Increased for higher density
+        const connectionsDistance = 140; 
         const equilibriumDistance = 120;
         const mouseDistance = 200;
 
@@ -377,7 +418,7 @@
         function initData() {
             nodes = [];
 
-            // 1. Add Major Slogan Nodes First (Priority)
+            // 1. Add Major Slogan Nodes
             slogans.forEach(item => {
                 nodes.push({
                     x: Math.random() * width,
@@ -387,15 +428,16 @@
                     text: item.text,
                     category: item.t,
                     color: themes[item.t].color,
-                    radius: 7, 
+                    radius: 6, 
                     isSlogan: true,
                     hovered: false,
                     targetX: null,
-                    targetY: null
+                    targetY: null,
+                    locked: false // New property for snap-to-grid
                 });
             });
 
-            // 2. Fill the rest with Standard Thoughts (Cycling through data)
+            // 2. Fill with Standard Thoughts
             let dataIndex = 0;
             while (nodes.length < TARGET_NODE_COUNT) {
                 const item = rawData[dataIndex % rawData.length];
@@ -407,12 +449,12 @@
                     text: cleanText(item.text),
                     category: item.t,
                     color: themes[item.t].color,
-                    // Variable radius for depth
-                    radius: Math.random() * 2 + 1.5,
+                    radius: Math.random() * 2 + 1, // Slightly smaller variance
                     isSlogan: false,
                     hovered: false,
-                    targetX: null, // For text formation
-                    targetY: null
+                    targetX: null,
+                    targetY: null,
+                    locked: false
                 });
                 dataIndex++;
             }
@@ -421,15 +463,18 @@
         // --- SLOGAN FORMATION LOGIC ---
 
         function calculateSloganTargets() {
-            // 1. Create temporary canvas to rasterize text
+            // 1. Create temporary canvas
             const tempCanvas = document.createElement('canvas');
             const tCtx = tempCanvas.getContext('2d');
             tempCanvas.width = width;
             tempCanvas.height = height;
 
-            // 2. Settings matching the visible HTML overlay
+            // 2. Settings - Matches CSS but higher contrast for sampling
+            tCtx.fillStyle = 'black';
+            tCtx.fillRect(0,0, width, height);
             tCtx.fillStyle = 'white';
-            tCtx.font = '900 ' + (width * 0.05) + 'px Courier New'; // Match CSS 5vw
+            // Use a bold sans-serif for cleaner edge detection
+            tCtx.font = '900 ' + (width * 0.05) + 'px Inter, system-ui, sans-serif'; 
             tCtx.textAlign = 'center';
             tCtx.textBaseline = 'middle';
             
@@ -442,62 +487,102 @@
                 tCtx.fillText(line, width / 2, startY + (i * lineHeight));
             });
 
-            // 4. Sample Pixels
+            // 4. Sample Pixels with Edge Detection
+            // We want points ON the text, but also prioritize edges for sharpness
             const imageData = tCtx.getImageData(0, 0, width, height).data;
             let validPoints = [];
-            // Reduced step size to get MORE points for the increased node count
-            const step = 5; 
+            let edgePoints = [];
+            const step = 4; // High resolution sampling
 
-            for (let y = 0; y < height; y += step) {
-                for (let x = 0; x < width; x += step) {
-                    const alpha = imageData[((y * width + x) * 4) + 3];
-                    if (alpha > 128) {
-                        validPoints.push({x: x, y: y});
+            for (let y = 1; y < height - 1; y += step) {
+                for (let x = 1; x < width - 1; x += step) {
+                    const idx = (y * width + x) * 4;
+                    if (imageData[idx] > 100) { // If pixel is white
+                        // Check neighbors to see if it's an edge
+                        const left = imageData[idx - 4];
+                        const right = imageData[idx + 4];
+                        const up = imageData[((y-1) * width + x) * 4];
+                        const down = imageData[((y+1) * width + x) * 4];
+                        
+                        if (left < 100 || right < 100 || up < 100 || down < 100) {
+                            edgePoints.push({x, y});
+                        } else {
+                            validPoints.push({x, y});
+                        }
                     }
                 }
             }
 
-            // 5. Shuffle points for random assignment
+            // 5. Shuffle points
             validPoints.sort(() => Math.random() - 0.5);
+            edgePoints.sort(() => Math.random() - 0.5);
 
-            // 6. Assign targets to nodes
+            // 6. Assign targets
+            // Prioritize edge points for sharpness, then fill
+            let edgeIndex = 0;
+            let fillIndex = 0;
+
             nodes.forEach((node, i) => {
-                // If we have points, assign. 
-                if (i < validPoints.length) {
-                    node.targetX = validPoints[i].x;
-                    node.targetY = validPoints[i].y;
-                } else {
-                    // Fallback: if we ran out of unique points, stack on existing ones
-                    // This ensures no node is left floating
-                    const fallback = validPoints[i % validPoints.length];
-                    if (fallback) {
-                        node.targetX = fallback.x;
-                        node.targetY = fallback.y;
-                    } else {
-                        // Extreme fallback
-                        node.targetX = width/2;
-                        node.targetY = height/2;
-                    }
+                let target = null;
+                
+                // Distribute ~40% of nodes to edges for crisp outline
+                if (i % 3 === 0 && edgeIndex < edgePoints.length) {
+                    target = edgePoints[edgeIndex++];
+                } else if (fillIndex < validPoints.length) {
+                    target = validPoints[fillIndex++];
+                } else if (edgeIndex < edgePoints.length) {
+                    target = edgePoints[edgeIndex++];
                 }
-            });
 
-            // 7. Show Background Text
-            document.getElementById('final-slogan-container').style.opacity = '1';
-            
-            // 8. Hide Legend to clear clutter
-            document.getElementById('main-legend').style.opacity = '0';
+                if (target) {
+                    node.targetX = target.x;
+                    node.targetY = target.y;
+                } else {
+                    // Fallback to center if screen is massive
+                    node.targetX = width/2;
+                    node.targetY = height/2;
+                }
+                node.locked = false; // Reset lock state
+            });
         }
 
-        // Resize Handling
+        // --- MODE CONTROL ---
+
+        window.setMode = function(mode) {
+            currentMode = mode;
+            
+            // Update UI buttons
+            document.getElementById('btn-constellation').classList.toggle('active', mode === 'constellation');
+            document.getElementById('btn-slogan').classList.toggle('active', mode === 'slogan');
+
+            const sloganContainer = document.getElementById('final-slogan-container');
+            const legend = document.getElementById('main-legend');
+
+            if (mode === 'slogan') {
+                calculateSloganTargets();
+                sloganContainer.style.opacity = '1';
+                legend.style.opacity = '0';
+                legend.style.pointerEvents = 'none';
+            } else {
+                sloganContainer.style.opacity = '0';
+                legend.style.opacity = '1';
+                legend.style.pointerEvents = 'auto';
+                
+                // Unlock all nodes
+                nodes.forEach(n => {
+                    n.locked = false;
+                    // Give them a random nudge to break formation naturally
+                    n.vx = (Math.random() - 0.5) * 2;
+                    n.vy = (Math.random() - 0.5) * 2;
+                });
+            }
+        }
+
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
             if(nodes.length === 0) initData();
-            
-            // If in slogan mode, recalc targets on resize
-            if (currentMode === 'slogan') {
-                 calculateSloganTargets();
-            }
+            if (currentMode === 'slogan') calculateSloganTargets();
         }
 
         window.addEventListener('resize', resize);
@@ -509,11 +594,9 @@
             requestAnimationFrame(animate);
             ctx.clearRect(0, 0, width, height);
 
-            // Check Timer
+            // Auto-trigger timer check
             if (currentMode === 'constellation' && Date.now() - START_TIME > TRANSITION_DELAY) {
-                currentMode = 'slogan';
-                calculateSloganTargets();
-                console.log("Triggering Slogan Mode");
+                setMode('slogan');
             }
 
             ctx.lineWidth = 0.5;
@@ -521,17 +604,20 @@
             for (let i = 0; i < nodes.length; i++) {
                 let p1 = nodes[i];
                 
-                // Skip if filtered out
-                if (activeFilter && p1.category !== activeFilter) {
+                // Skip if filtered out (only in constellation mode)
+                if (currentMode === 'constellation' && activeFilter && p1.category !== activeFilter) {
                     continue; 
                 }
 
-                // --- BEHAVIOR 1: CONSTELLATION MODE ---
+                // --- MODE 1: CONSTELLATION ---
                 if (currentMode === 'constellation') {
                     
                     // Connection Lines
                     for (let j = i + 1; j < nodes.length; j++) {
                         let p2 = nodes[j];
+                        // Only connect relatively close indices to improve perf with 500 nodes
+                        if (Math.abs(i - j) > 50 && p1.category === p2.category) continue; 
+
                         if (p1.category === p2.category) {
                             let dx = p2.x - p1.x;
                             let dy = p2.y - p1.y;
@@ -539,19 +625,16 @@
 
                             if (dist < connectionsDistance) {
                                 let opacity = 1 - (dist / connectionsDistance);
-                                ctx.strokeStyle = `rgba(${hexToRgb(p1.color)}, ${opacity * 0.4})`;
+                                ctx.strokeStyle = `rgba(${hexToRgb(p1.color)}, ${opacity * 0.3})`;
                                 ctx.beginPath();
                                 ctx.moveTo(p1.x, p1.y);
                                 ctx.lineTo(p2.x, p2.y);
                                 ctx.stroke();
 
                                 // Spring Force
-                                const forceStrength = 0.00005;
                                 const displacement = dist - equilibriumDistance;
-                                const nx = dx / dist;
-                                const ny = dy / dist;
-                                const fx = nx * displacement * forceStrength;
-                                const fy = ny * displacement * forceStrength;
+                                const fx = (dx / dist) * displacement * 0.00005;
+                                const fy = (dy / dist) * displacement * 0.00005;
 
                                 p1.vx += fx;
                                 p1.vy += fy;
@@ -566,58 +649,66 @@
                         let dx = mouse.x - p1.x;
                         let dy = mouse.y - p1.y;
                         let dist = Math.sqrt(dx*dx + dy*dy);
-                        
                         if (dist < mouseDistance) {
                             const force = (mouseDistance - dist) / mouseDistance;
-                            const fx = (dx / dist) * force * 0.5;
-                            const fy = (dy / dist) * force * 0.5;
-                            p1.vx -= fx;
-                            p1.vy -= fy;
+                            p1.vx -= (dx / dist) * force * 0.5;
+                            p1.vy -= (dy / dist) * force * 0.5;
                         }
                     }
-
-                    // Gentle Gravity
-                    const centerX = width / 2;
-                    const centerY = height / 2;
-                    p1.vx += (centerX - p1.x) * 0.00002;
-                    p1.vy += (centerY - p1.y) * 0.00002;
-
-                } 
-                // --- BEHAVIOR 2: SLOGAN MODE ---
-                else if (currentMode === 'slogan' && p1.targetX !== null) {
                     
-                    // Move towards target
-                    const dx = p1.targetX - p1.x;
-                    const dy = p1.targetY - p1.y;
-                    
-                    // Strong Pull
-                    p1.vx += dx * 0.005;
-                    p1.vy += dy * 0.005;
-                    
-                    // No lines, No mouse interaction (locked in formation)
-                }
-
-                // Friction
-                if (currentMode === 'constellation') {
+                    // Friction & Gravity
+                    p1.vx += (width/2 - p1.x) * 0.00001;
+                    p1.vy += (height/2 - p1.y) * 0.00001;
                     p1.vx *= 0.99;
                     p1.vy *= 0.99;
-                } else {
-                    p1.vx *= 0.92; // Higher friction to stop snapping
-                    p1.vy *= 0.92;
+
+                } 
+                // --- MODE 2: SLOGAN (SNAP TO GRID) ---
+                else if (currentMode === 'slogan' && p1.targetX !== null) {
+                    
+                    if (!p1.locked) {
+                        const dx = p1.targetX - p1.x;
+                        const dy = p1.targetY - p1.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        
+                        // SNAP LOGIC: If very close, stop moving
+                        if (dist < 1) {
+                            p1.x = p1.targetX;
+                            p1.y = p1.targetY;
+                            p1.locked = true;
+                        } else {
+                            // Ease towards target
+                            // Variable speed based on distance for natural feel
+                            const speed = dist * 0.05 + 0.02;
+                            p1.vx = dx * 0.05;
+                            p1.vy = dy * 0.05;
+                            
+                            p1.vx *= 0.9;
+                            p1.vy *= 0.9;
+                        }
+                    } else {
+                        // Keep locked in place
+                        p1.x = p1.targetX;
+                        p1.y = p1.targetY;
+                        p1.vx = 0;
+                        p1.vy = 0;
+                    }
                 }
 
                 // Update Position
-                p1.x += p1.vx;
-                p1.y += p1.vy;
+                if (!p1.locked) {
+                    p1.x += p1.vx;
+                    p1.y += p1.vy;
+                }
 
-                // Boundary bounce (Only in constellation mode)
+                // Bounce (Constellation only)
                 if (currentMode === 'constellation') {
                     if (p1.x < 0 || p1.x > width) p1.vx *= -1;
                     if (p1.y < 0 || p1.y > height) p1.vy *= -1;
                 }
 
                 // Draw Node
-                let isDimmed = activeFilter && p1.category !== activeFilter;
+                let isDimmed = currentMode === 'constellation' && activeFilter && p1.category !== activeFilter;
                 
                 ctx.beginPath();
                 ctx.arc(p1.x, p1.y, isDimmed ? 1 : p1.radius, 0, Math.PI * 2);
@@ -630,18 +721,16 @@
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = isDimmed ? '#333' : p1.color;
                 }
-                
                 ctx.fill();
                 ctx.shadowBlur = 0;
 
-                // Draw Text Labels (Only in Constellation Mode)
+                // Draw Labels (Constellation only)
                 if (currentMode === 'constellation' && p1.isSlogan && !isDimmed) {
                     ctx.font = 'bold 11px Courier New';
                     ctx.fillStyle = p1.color;
                     ctx.textAlign = 'center';
                     ctx.fillText(p1.text, p1.x, p1.y - 14);
                 }
-                // In Slogan mode, we hide the node text labels to avoid cluttering the big word shape
             }
         }
 
@@ -650,7 +739,7 @@
             return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 255, 255';
         }
 
-        // --- EVENTS ---
+        // --- INTERACTION ---
 
         canvas.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX;
@@ -659,17 +748,24 @@
             let hovering = false;
             let tooltip = document.getElementById('tooltip');
 
-            nodes.forEach(node => {
+            // Optimize search: loop backwards, stop at first hit
+            for (let i = nodes.length - 1; i >= 0; i--) {
+                let node = nodes[i];
                 let dx = mouse.x - node.x;
                 let dy = mouse.y - node.y;
+                // Simple box check first for speed
+                if (Math.abs(dx) > 20 || Math.abs(dy) > 20) {
+                    node.hovered = false;
+                    continue;
+                }
+                
                 let dist = Math.sqrt(dx*dx + dy*dy);
-                const hitDist = node.isSlogan ? 30 : 20;
+                const hitDist = node.isSlogan ? 30 : 15;
 
                 if (dist < hitDist) {
                     node.hovered = true;
                     hovering = true;
                     
-                    // Show tooltip if not slogan and valid mode
                     if (!node.isSlogan && currentMode === 'constellation') {
                         tooltip.style.display = 'block';
                         tooltip.style.left = (e.clientX + 15) + 'px';
@@ -677,30 +773,32 @@
                         tooltip.innerText = themes[node.category].label;
                         tooltip.style.borderColor = node.color;
                     }
+                    break; // Only hover one at a time
                 } else {
                     node.hovered = false;
                 }
-            });
+            }
 
             if (!hovering) tooltip.style.display = 'none';
-            // Set cursor pointer
             canvas.style.cursor = hovering ? 'pointer' : 'default';
         });
 
         canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
 
         canvas.addEventListener('click', (e) => {
-            nodes.forEach(node => {
+            for (let i = nodes.length - 1; i >= 0; i--) {
+                let node = nodes[i];
                 let dx = e.clientX - node.x;
                 let dy = e.clientY - node.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
-                const hitDist = node.isSlogan ? 30 : 20;
+                const hitDist = node.isSlogan ? 30 : 15;
 
                 if (dist < hitDist) {
                     selectedNode = node;
                     displayThought(node);
+                    return;
                 }
-            });
+            }
         });
 
         const panel = document.getElementById('loudspeaker-panel');
