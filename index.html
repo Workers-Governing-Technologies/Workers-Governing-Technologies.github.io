@@ -1,5 +1,3 @@
-WORK IN PROGRESS
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -241,7 +239,7 @@ WORK IN PROGRESS
         }
 
         table#xw-grid { border-collapse:collapse; border:1px solid rgba(255,255,255,0.1); }
-        table#xw-grid td { width:26px; height:26px; position:relative; padding:0; }
+        table#xw-grid td { width:24px; height:24px; position:relative; padding:0; }
 
         .xw-black { background:#020209; }
 
@@ -703,26 +701,41 @@ window.onload=()=>{resize();animate();};
 // ══════════════════════════════════════════════════════
 
 const XW_WORDS = [
-    // Spine
+    // SPINE 1: Digital Solidarity Economies
     {word:"DIGITALSOLIDARITYECONOMIES", row:10, col:1, dir:"H", num:12, theme:"economy"},
-    // Intersections with Spine
-    {word:"CREATIVECOMMONS", row:6, col:5, dir:"V", num:6, theme:"data"}, // (10,5) 'T'
-    {word:"PROFIT", row:8, col:10, dir:"V", num:3, theme:"economy"}, // (10,10) 'O'
-    {word:"DATACENTERS", row:4, col:18, dir:"V", num:1, theme:"environment"}, // (10,18) 'E'
-    {word:"GAMING", row:7, col:24, dir:"V", num:4, theme:"democracy"}, // (10,24) 'I'
-    // Intersection between COOPCYCLE and PROFIT
-    {word:"COOPCYCLE", row:8, col:7, dir:"H", num:5, theme:"economy"}, // (8,10) 'P'
-    // Independent/Safe Words
-    {word:"WRITER", row:2, col:5, dir:"H", num:7, theme:"creativity"},
+    
+    // Intersections for Spine 1
+    // (10,5) is 'T'
+    {word:"CREATIVECOMMONS", row:6, col:5, dir:"V", num:6, theme:"data"}, 
+    // (10,6) is 'A' (index 5 of WHATSAPP)
+    {word:"WHATSAPP", row:5, col:6, dir:"V", num:2, theme:"democracy"},
+    // (10,20) is 'O' (index 2 of PROFIT)
+    {word:"PROFIT", row:8, col:20, dir:"V", num:3, theme:"economy"},
+    // (10,25) is 'E' (index 5 of DATACENTERS)
+    {word:"DATACENTERS", row:5, col:25, dir:"V", num:1, theme:"environment"},
+
+    // Spine 3 Intersection
+    // Intersects DATACENTERS at index 7 (T) -> Row (5+7)=12, Col 25
+    {word:"PARTICIPATORY", row:12, col:16, dir:"H", num:10, theme:"democracy"},
+    // Also intersects PROFIT at (12,20) -> index 4 of PROFIT is 'I', index 4 of PARTICIPATORY is 'I'
+
+    // SPINE 2: Intellectual Property (Moved to Row 22 to avoid CreativeCommons)
+    {word:"INTELLECTUALPROPERTY", row:22, col:1, dir:"H", num:15, theme:"creativity"},
+    
+    // Intersections for Spine 2
+    // (22,13) is 'P' (index 3 of COOPYLEFT)
+    {word:"COOPYLEFT", row:19, col:13, dir:"V", num:13, theme:"rights"},
+    // (22,14) is 'R' (index 1 of ARTEESETICA)
+    {word:"ARTEESETICA", row:21, col:14, dir:"V", num:16, theme:"environment"},
+
+    // Safe placements (No clashing intersections)
+    {word:"WRITER", row:2, col:10, dir:"H", num:7, theme:"creativity"},
     {word:"UNIONIZED", row:4, col:10, dir:"H", num:9, theme:"democracy"},
-    {word:"PARTICIPATORY", row:15, col:12, dir:"H", num:10, theme:"democracy"},
-    {word:"INTERCOOPERATION", row:22, col:1, dir:"H", num:14, theme:"economy"},
-    {word:"INTELLECTUALPROPERTY", row:21, col:10, dir:"H", num:15, theme:"creativity"},
-    {word:"WHATSAPP", row:2, col:2, dir:"V", num:2, theme:"democracy"},
-    {word:"SUBVERT", row:12, col:3, dir:"V", num:11, theme:"economy"},
-    {word:"MESH", row:2, col:28, dir:"V", num:8, theme:"economy"},
-    {word:"COOPYLEFT", row:12, col:26, dir:"V", num:13, theme:"rights"},
-    {word:"ARTEESETICA", row:18, col:24, dir:"V", num:16, theme:"environment"},
+    {word:"COOPCYCLE", row:8, col:10, dir:"H", num:5, theme:"economy"},
+    {word:"SUBVERT", row:14, col:3, dir:"V", num:11, theme:"economy"},
+    {word:"INTERCOOPERATION", row:26, col:1, dir:"H", num:14, theme:"economy"},
+    {word:"MESH", row:2, col:2, dir:"V", num:8, theme:"economy"},
+    {word:"GAMING", row:2, col:24, dir:"V", num:4, theme:"democracy"},
 ];
 
 const XW_CLUES = {
