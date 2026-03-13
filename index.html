@@ -217,6 +217,27 @@
         }
         .xw-btn:hover { background:rgba(255,255,255,0.08); color:white; border-color:rgba(255,255,255,0.4); }
 
+        #active-clue-bar {
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #e0e0e0;
+            flex-shrink: 0;
+            min-height: 3.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .clue-dir-label {
+            font-weight: bold;
+            color: var(--color-creativity);
+            margin-right: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
         .xw-body {
             display: flex;
             flex: 1;
@@ -226,19 +247,15 @@
 
         .xw-grid-col {
             flex: 0 0 auto;
-            padding: 18px 16px 18px 20px;
+            padding: 18px;
             border-right: 1px solid var(--border-color);
             overflow: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-        }
-        .xw-grid-label {
-            font-size:0.58rem; letter-spacing:3px;
-            color:rgba(255,255,255,0.25); text-transform:uppercase;
+            align-items: center;
         }
 
-        table#xw-grid { border-collapse:collapse; border:1px solid rgba(255,255,255,0.1); }
+        table#xw-grid { border-collapse:collapse; border:1px solid rgba(255,255,255,0.1); min-width: max-content; }
         table#xw-grid td { width:24px; height:24px; position:relative; padding:0; }
 
         .xw-black { background:#020209; }
@@ -348,10 +365,20 @@
 
         @media(max-width:780px){
             .xw-body{flex-direction:column;}
-            .xw-grid-col{border-right:none;border-bottom:1px solid var(--border-color);}
-            #crossword-panel{top:0;left:0;transform:none;width:100vw;max-height:100vh;}
+            .xw-grid-col{
+                border-right:none;
+                border-bottom:1px solid var(--border-color);
+                align-items: flex-start; /* allow natural scrolling from edge */
+                padding: 10px;
+            }
+            #crossword-panel{top:0;left:0;transform:none;width:100vw;height:100vh;max-height:100vh;border-radius:0;}
             #crossword-panel.open{transform:none;}
             h1{font-size:1.4rem;}
+
+            /* Mobile precise usability */
+            table#xw-grid td { width: 34px; height: 34px; } /* Larger touch targets */
+            .xw-cell input { font-size: 16px; } /* Prevent iOS auto-zoom on focus */
+            #active-clue-bar { font-size: 0.85rem; padding: 12px; }
         }
     </style>
 </head>
@@ -412,9 +439,13 @@
             <button class="xw-btn" onclick="toggleCrossword()">[Close]</button>
         </div>
     </div>
+    
+    <div id="active-clue-bar">
+        Select a cell to begin...
+    </div>
+
     <div class="xw-body">
         <div class="xw-grid-col">
-            <div class="xw-grid-label">// Grid</div>
             <table id="xw-grid"></table>
         </div>
         <div class="xw-clues-col">
@@ -902,7 +933,14 @@ function xwHighlight(){
         Object.keys(themes).forEach(t=>td.classList.remove('tc-'+t));
     });
     document.querySelectorAll('.clue-item').forEach(el=>el.classList.remove('active'));
-    if(!xwActiveCell)return;
+    
+    const activeClueBar = document.getElementById('active-clue-bar');
+    
+    if(!xwActiveCell) {
+        activeClueBar.innerHTML = 'Select a cell to begin...';
+        return;
+    }
+    
     const w=xwWordMap[xwActiveNum+xwDir];
     if(w){
         for(let i=0;i<w.word.length;i++){
@@ -912,6 +950,12 @@ function xwHighlight(){
         }
         const ce=document.getElementById('xwclue-'+xwActiveNum+(xwDir==='H'?'A':'D'));
         if(ce){ce.classList.add('active');ce.scrollIntoView({block:'nearest'});}
+        
+        const clueDir = xwDir === 'H' ? 'across' : 'down';
+        const clueText = XW_CLUES[clueDir][xwActiveNum];
+        activeClueBar.innerHTML = `<span class="clue-dir-label">${xwActiveNum} ${clueDir}</span> ${clueText}`;
+    } else {
+        activeClueBar.innerHTML = '';
     }
     xwGetCell(xwActiveCell[0],xwActiveCell[1])?.classList.add('active');
 }
