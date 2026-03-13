@@ -1,58 +1,51 @@
-Worker in progress
+
+Work in Progress 
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Workers' Thought Constellation</title>
+    <title>Workers' Governing Technologies Workshop — Crossword</title>
     <style>
         :root {
             --bg-color: #050510;
             --text-color: #e0e0e0;
-            --panel-bg: rgba(10, 15, 30, 0.9);
+            --panel-bg: rgba(10, 15, 30, 0.97);
             --border-color: rgba(255, 255, 255, 0.15);
-            
-            /* Theme Colors - Slightly brightened for clarity */
-            --color-creativity: #00f2ff; /* Cyan */
-            --color-rights: #ff4757;     /* Red */
-            --color-democracy: #ffa502;  /* Orange */
-            --color-data: #2ed573;       /* Green */
-            --color-equity: #ff6b81;     /* Pink */
-            --color-economy: #a55eea;    /* Purple */
-            --color-policy: #f1c40f;     /* Yellow */
-            --color-environment: #1e90ff;/* Blue */
+            --color-creativity:  #00f2ff;
+            --color-rights:      #ff4757;
+            --color-democracy:   #ffa502;
+            --color-data:        #2ed573;
+            --color-equity:      #ff6b81;
+            --color-economy:     #a55eea;
+            --color-policy:      #f1c40f;
+            --color-environment: #1e90ff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace; 
+            font-family: 'Courier New', Courier, monospace;
             overflow: hidden;
             width: 100vw;
             height: 100vh;
         }
 
+        /* ── constellation canvas ── */
         #canvas-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+            position: absolute; top:0; left:0;
+            width:100%; height:100%; z-index:1;
         }
 
-        /* UI Overlay */
+        /* ── UI overlay ── */
         #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none; 
+            position: absolute; top:0; left:0;
+            width:100%; height:100%; z-index:2;
+            pointer-events: none;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -61,17 +54,17 @@ Worker in progress
 
         header {
             pointer-events: auto;
-            max-width: 600px;
-            background: radial-gradient(circle at top left, rgba(5,5,16,0.8) 0%, transparent 70%);
+            max-width: 650px;
+            background: radial-gradient(circle at top left, rgba(5,5,16,0.85) 0%, transparent 70%);
             padding: 20px;
             border-radius: 8px;
         }
 
         h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             margin-bottom: 0.5rem;
             text-shadow: 0 0 15px rgba(255,255,255,0.2);
             line-height: 1.2;
@@ -85,760 +78,998 @@ Worker in progress
             padding-left: 10px;
         }
 
-        /* Controls */
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+        .controls { display:flex; gap:12px; flex-wrap:wrap; }
 
         .btn {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
             border: 1px solid var(--border-color);
             color: white;
-            padding: 8px 16px;
+            padding: 7px 15px;
             font-family: 'Courier New', monospace;
-            font-size: 0.75rem;
+            font-size: 0.73rem;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover, .btn.active {
-            background: white;
-            color: black;
-            border-color: white;
-        }
-
-        /* Legend */
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            pointer-events: auto;
-            transition: opacity 0.5s;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            padding: 4px 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid transparent;
-            border-radius: 4px;
             transition: all 0.2s;
         }
-        .legend-item:hover { 
-            background: rgba(255,255,255,0.15); 
-            border-color: rgba(255,255,255,0.3);
-        }
-        .dot { width: 6px; height: 6px; border-radius: 50%; }
+        .btn:hover, .btn.active { background:white; color:black; border-color:white; }
 
-        /* Loudspeaker Panel */
+        /* ── slogan backdrop ── */
+        #final-slogan-container {
+            position:absolute; top:50%; left:50%;
+            transform:translate(-50%,-50%);
+            text-align:center; opacity:0;
+            transition:opacity 2s ease-in-out;
+            z-index:0; pointer-events:none; width:100%;
+        }
+        #final-slogan-text {
+            font-family:'Inter',system-ui,sans-serif;
+            font-weight:900; font-size:5vw;
+            color:rgba(255,255,255,0.3);
+            line-height:1.1; white-space:pre-wrap; letter-spacing:-2px;
+        }
+
+        /* ── tooltip ── */
+        #tooltip {
+            position:absolute; pointer-events:none;
+            background:rgba(10,15,30,0.95);
+            border:1px solid rgba(255,255,255,0.2);
+            padding:8px 12px; font-size:0.8rem;
+            font-family:'Courier New',monospace;
+            max-width:250px; display:none; z-index:10;
+            box-shadow:0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* ── loudspeaker panel (original) ── */
         #loudspeaker-panel {
+            pointer-events:auto;
+            position:absolute; bottom:2rem; right:2rem;
+            width:450px; max-width:90vw;
+            background:var(--panel-bg);
+            border:1px solid var(--border-color);
+            padding:1.5rem;
+            display:flex; flex-direction:column; gap:1rem;
+            backdrop-filter:blur(12px);
+            box-shadow:0 10px 40px rgba(0,0,0,0.5);
+            transform:translateY(0);
+            transition:transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
+            max-height:80vh; z-index:100;
+        }
+        #loudspeaker-panel.hidden { transform:translateY(120%); }
+        .panel-header {
+            font-size:0.7rem; text-transform:uppercase; letter-spacing:2px;
+            border-bottom:1px solid var(--border-color); padding-bottom:0.8rem;
+            display:flex; justify-content:space-between; flex-shrink:0;
+            color:rgba(255,255,255,0.6);
+        }
+        #thought-category { font-weight:bold; color:white; }
+        #thought-display {
+            font-size:1.1rem; line-height:1.6;
+            min-height:80px; overflow-y:auto; padding-right:10px;
+        }
+        #thought-display::-webkit-scrollbar{width:4px;}
+        #thought-display::-webkit-scrollbar-track{background:rgba(0,0,0,0.2);}
+        #thought-display::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3);}
+        .instruction {
+            font-size:0.7rem; opacity:0.5; text-align:right;
+            margin-top:0.5rem; text-transform:uppercase; letter-spacing:1px; cursor:pointer;
+        }
+        .instruction:hover{opacity:1;text-decoration:underline;}
+
+        /* ════════════════════════════
+           CROSSWORD PANEL
+        ════════════════════════════ */
+        #crossword-panel {
             pointer-events: auto;
             position: absolute;
-            bottom: 2rem;
-            right: 2rem;
-            width: 450px;
-            max-width: 90vw;
-            background: var(--panel-bg); 
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            width: min(1180px, 96vw);
+            max-height: 92vh;
+            background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            padding: 1.5rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 80px rgba(0,0,0,0.8);
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            transform: translateY(0);
-            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            max-height: 80vh; 
-            z-index: 100;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2,0.8,0.2,1);
+        }
+        #crossword-panel.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
         }
 
-        #loudspeaker-panel.hidden {
-            transform: translateY(120%);
+        .xw-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
-
-        .panel-header {
+        .xw-topbar-title {
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.4;
+        }
+        .xw-topbar-title strong { color:white; }
+        .xw-topbar-title a { 
+            color: var(--color-creativity); 
+            text-decoration: none; 
+            border-bottom: 1px dotted var(--color-creativity);
+            transition: all 0.2s;
+        }
+        .xw-topbar-title a:hover {
+            color: white;
+            border-bottom-style: solid;
+        }
+        .xw-actions { display:flex; gap:8px; }
+        .xw-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: rgba(255,255,255,0.45);
+            font-family:'Courier New',monospace;
+            font-size:0.63rem; padding:5px 11px;
+            cursor:pointer; text-transform:uppercase; letter-spacing:1px;
+            transition: all 0.15s;
+        }
+        .xw-btn:hover { background:rgba(255,255,255,0.08); color:white; border-color:rgba(255,255,255,0.4); }
+
+        .xw-body {
             display: flex;
-            justify-content: space-between;
-            flex-shrink: 0;
-            color: rgba(255,255,255,0.6);
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
-        #thought-category { font-weight: bold; color: white; }
-
-        #thought-display {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            min-height: 80px;
-            overflow-y: auto;
-            padding-right: 10px;
+        .xw-grid-col {
+            flex: 0 0 auto;
+            padding: 18px 16px 18px 20px;
+            border-right: 1px solid var(--border-color);
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        
-        /* Styled Scrollbar */
-        #thought-display::-webkit-scrollbar { width: 4px; }
-        #thought-display::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-        #thought-display::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); }
+        .xw-grid-label {
+            font-size:0.58rem; letter-spacing:3px;
+            color:rgba(255,255,255,0.25); text-transform:uppercase;
+        }
 
-        .instruction {
-            font-size: 0.7rem;
-            opacity: 0.5;
-            text-align: right;
-            margin-top: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        table#xw-grid { border-collapse:collapse; border:1px solid rgba(255,255,255,0.1); }
+        table#xw-grid td { width:28px; height:28px; position:relative; padding:0; }
+
+        .xw-black { background:#020209; }
+
+        .xw-cell {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.09);
             cursor: pointer;
+            transition: background 0.07s;
         }
-        .instruction:hover { opacity: 1; text-decoration: underline; }
+        .xw-cell.in-word  { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.15); }
+        .xw-cell.active   { background:rgba(255,255,255,0.11)!important; border-color:rgba(255,255,255,0.5)!important; }
+        .xw-cell.correct  { background:rgba(46,213,115,0.1)!important;   border-color:var(--color-data)!important; }
+        .xw-cell.wrong    { background:rgba(255,71,87,0.1)!important;     border-color:var(--color-rights)!important; }
 
-        /* Final Slogan Backdrop */
-        #final-slogan-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            opacity: 0;
-            transition: opacity 2s ease-in-out;
-            z-index: 0; 
-            pointer-events: none;
-            width: 100%;
+        .xw-cell.in-word.tc-creativity  { border-color:rgba(0,242,255,0.3); }
+        .xw-cell.in-word.tc-rights      { border-color:rgba(255,71,87,0.3); }
+        .xw-cell.in-word.tc-democracy   { border-color:rgba(255,165,2,0.3); }
+        .xw-cell.in-word.tc-data        { border-color:rgba(46,213,115,0.3); }
+        .xw-cell.in-word.tc-equity      { border-color:rgba(255,107,129,0.3); }
+        .xw-cell.in-word.tc-economy     { border-color:rgba(165,94,234,0.3); }
+        .xw-cell.in-word.tc-policy      { border-color:rgba(241,196,15,0.3); }
+        .xw-cell.in-word.tc-environment { border-color:rgba(30,144,255,0.3); }
+
+        .xw-cell.active.tc-creativity  { border-color:var(--color-creativity)!important;  box-shadow:inset 0 0 8px rgba(0,242,255,0.15); }
+        .xw-cell.active.tc-rights      { border-color:var(--color-rights)!important;      box-shadow:inset 0 0 8px rgba(255,71,87,0.15); }
+        .xw-cell.active.tc-democracy   { border-color:var(--color-democracy)!important;   box-shadow:inset 0 0 8px rgba(255,165,2,0.15); }
+        .xw-cell.active.tc-data        { border-color:var(--color-data)!important;        box-shadow:inset 0 0 8px rgba(46,213,115,0.15); }
+        .xw-cell.active.tc-equity      { border-color:var(--color-equity)!important;      box-shadow:inset 0 0 8px rgba(255,107,129,0.15); }
+        .xw-cell.active.tc-economy     { border-color:var(--color-economy)!important;     box-shadow:inset 0 0 8px rgba(165,94,234,0.15); }
+        .xw-cell.active.tc-policy      { border-color:var(--color-policy)!important;      box-shadow:inset 0 0 8px rgba(241,196,15,0.15); }
+        .xw-cell.active.tc-environment { border-color:var(--color-environment)!important; box-shadow:inset 0 0 8px rgba(30,144,255,0.15); }
+
+        .xw-cell input {
+            position:absolute; inset:0; width:100%; height:100%;
+            border:none; background:transparent;
+            text-align:center;
+            font-family:'Courier New',monospace; font-size:12px; font-weight:bold;
+            color:white; text-transform:uppercase;
+            cursor:pointer; caret-color:transparent; outline:none; padding:0; z-index:2;
+        }
+        .xw-cell.correct input { color:var(--color-data); }
+        .xw-cell.wrong   input { color:var(--color-rights); }
+
+        .cell-num {
+            position:absolute; top:1px; left:2px;
+            font-size:7px; color:rgba(255,255,255,0.28);
+            line-height:1; z-index:3; pointer-events:none;
+            font-family:'Courier New',monospace;
         }
 
-        #final-slogan-text {
-            font-family: 'Inter', system-ui, sans-serif; /* Cleaner font for the backdrop */
-            font-weight: 900;
-            font-size: 5vw; 
-            color: rgba(255, 255, 255, 0.3); /* Higher opacity for better legibility */
-            line-height: 1.1;
-            white-space: pre-wrap;
-            letter-spacing: -2px;
+        .xw-clues-col {
+            flex:1; overflow-y:auto;
+            padding:18px 20px 18px 22px;
+        }
+        .xw-clues-col::-webkit-scrollbar{width:4px;}
+        .xw-clues-col::-webkit-scrollbar-track{background:transparent;}
+        .xw-clues-col::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);}
+
+        .xw-clues-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+
+        .xw-clue-group-title {
+            font-size:0.6rem; text-transform:uppercase; letter-spacing:3px;
+            color:rgba(255,255,255,0.35);
+            border-bottom:1px solid var(--border-color);
+            padding-bottom:6px; margin-bottom:8px;
         }
 
-        /* Tooltip */
-        #tooltip {
-            position: absolute;
-            pointer-events: none;
-            background: rgba(10, 15, 30, 0.95);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 12px;
-            font-size: 0.8rem;
-            max-width: 250px;
-            display: none;
-            z-index: 10;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        .clue-item {
+            display:flex; gap:8px;
+            padding:5px 6px;
+            cursor:pointer;
+            font-size:0.66rem; line-height:1.45;
+            margin-bottom:2px;
+            border-left:2px solid transparent;
+            transition:all 0.1s;
+            color:rgba(255,255,255,0.45);
+        }
+        .clue-item:hover { background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.8); }
+        .clue-item.active {
+            background:rgba(255,255,255,0.04);
+            color:white;
+        }
+        .clue-num { font-weight:bold; min-width:20px; flex-shrink:0; }
+
+        .clue-item.active.tc-creativity  { border-left-color:var(--color-creativity);  color:var(--color-creativity); }
+        .clue-item.active.tc-rights      { border-left-color:var(--color-rights);      color:var(--color-rights); }
+        .clue-item.active.tc-democracy   { border-left-color:var(--color-democracy);   color:var(--color-democracy); }
+        .clue-item.active.tc-data        { border-left-color:var(--color-data);        color:var(--color-data); }
+        .clue-item.active.tc-equity      { border-left-color:var(--color-equity);      color:var(--color-equity); }
+        .clue-item.active.tc-economy     { border-left-color:var(--color-economy);     color:var(--color-economy); }
+        .clue-item.active.tc-policy      { border-left-color:var(--color-policy);      color:var(--color-policy); }
+        .clue-item.active.tc-environment { border-left-color:var(--color-environment); color:var(--color-environment); }
+
+        #xw-congrats {
+            display:none; position:absolute; inset:0;
+            background:rgba(5,5,16,0.94); z-index:300;
+            align-items:center; justify-content:center;
+            flex-direction:column; text-align:center; gap:14px;
+        }
+        #xw-congrats.show { display:flex; }
+        #xw-congrats h2 {
+            font-size:1.8rem; text-transform:uppercase;
+            letter-spacing:6px; font-weight:800;
+            animation:fadeUp 0.5s ease;
+        }
+        #xw-congrats p { font-size:0.72rem; letter-spacing:2px; color:rgba(255,255,255,0.45); }
+        @keyframes fadeUp {
+            from{transform:translateY(18px);opacity:0;}
+            to{transform:translateY(0);opacity:1;}
         }
 
-        @media (max-width: 768px) {
-            #loudspeaker-panel {
-                bottom: 0;
-                right: 0;
-                width: 100%;
-                border-bottom: none;
-                max-height: 50vh;
-            }
-            .legend { display: none; }
-            h1 { font-size: 1.4rem; }
-            #final-slogan-text { font-size: 8vw; }
+        .legend {
+            display:flex; flex-wrap:wrap; gap:8px;
+            pointer-events:auto; transition:opacity 0.5s;
+        }
+        .legend-item {
+            display:flex; align-items:center; gap:6px;
+            font-size:0.7rem; cursor:pointer;
+            padding:4px 8px;
+            background:rgba(255,255,255,0.05);
+            border:1px solid transparent; border-radius:4px;
+            transition:all 0.2s;
+        }
+        .legend-item:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.25);}
+        .dot{width:6px;height:6px;border-radius:50%;}
+
+        @media(max-width:780px){
+            .xw-body{flex-direction:column;}
+            .xw-grid-col{border-right:none;border-bottom:1px solid var(--border-color);}
+            .xw-clues-grid{grid-template-columns:1fr;}
+            #crossword-panel{top:0;left:0;transform:none;width:100vw;max-height:100vh;}
+            #crossword-panel.open{transform:none;}
+            .legend{display:none;}
+            h1{font-size:1.4rem;}
         }
     </style>
 </head>
 <body>
 
-    <div id="final-slogan-container">
-        <div id="final-slogan-text">WORKERS'<br>GOVERNING<br>TECHNOLOGY</div>
+<div id="final-slogan-container">
+    <div id="final-slogan-text">WORKERS'<br>GOVERNING<br>TECHNOLOGY</div>
+</div>
+
+<div id="canvas-container">
+    <canvas id="constellation-canvas"></canvas>
+</div>
+
+<div id="ui-layer">
+    <header>
+        <h1>WORKERS' GOVERNING TECHNOLOGIES WORKSHOP</h1>
+        <div class="subtitle">Toronto, Sep 25-26, 2025 — Participants' Perspectives</div>
+        <div class="controls">
+            <button class="btn active" id="btn-constellation" onclick="setMode('constellation')">Constellation</button>
+            <button class="btn" id="btn-slogan" onclick="setMode('slogan')">The Demand</button>
+            <button class="btn" id="btn-crossword" onclick="toggleCrossword()">Crossword</button>
+        </div>
+        <br>
+        <div class="legend" id="main-legend">
+            <div class="legend-item" onclick="filterNodes('creativity')"><div class="dot" style="background:var(--color-creativity)"></div>Creativity</div>
+            <div class="legend-item" onclick="filterNodes('rights')"><div class="dot" style="background:var(--color-rights)"></div>Rights</div>
+            <div class="legend-item" onclick="filterNodes('democracy')"><div class="dot" style="background:var(--color-democracy)"></div>Democracy</div>
+            <div class="legend-item" onclick="filterNodes('data')"><div class="dot" style="background:var(--color-data)"></div>Data</div>
+            <div class="legend-item" onclick="filterNodes('equity')"><div class="dot" style="background:var(--color-equity)"></div>Equity</div>
+            <div class="legend-item" onclick="filterNodes('economy')"><div class="dot" style="background:var(--color-economy)"></div>Economy</div>
+            <div class="legend-item" onclick="filterNodes('policy')"><div class="dot" style="background:var(--color-policy)"></div>Policy</div>
+            <div class="legend-item" onclick="filterNodes('environment')"><div class="dot" style="background:var(--color-environment)"></div>Environment</div>
+        </div>
+    </header>
+
+    <div id="loudspeaker-panel" class="hidden">
+        <div class="panel-header">
+            <span>Slogan</span>
+            <span id="thought-category">THEME</span>
+        </div>
+        <div id="thought-display">Hover over a node to preview. Click to lock slogan.</div>
+        <div class="instruction" id="close-panel-btn">[CLOSE TRANSMISSION]</div>
     </div>
+</div>
 
-    <div id="canvas-container">
-        <canvas id="constellation-canvas"></canvas>
+<!-- CROSSWORD PANEL -->
+<div id="crossword-panel">
+    <div class="xw-topbar">
+        <div class="xw-topbar-title">
+            <strong>CROSSWORD</strong> on Learnings from 
+            <a href="https://creativelabourcriticalfutures.ca/blog/workers-governing-technologies-workshop/" target="_blank">Workers Governing Technologies Workshop</a> 
+            (Toronto, Sep 25-26, 2025)
+        </div>
+        <div class="xw-actions">
+            <button class="xw-btn" onclick="xwCheck()">Check</button>
+            <button class="xw-btn" onclick="xwReveal()">Reveal</button>
+            <button class="xw-btn" onclick="xwClear()">Clear</button>
+            <button class="xw-btn" onclick="toggleCrossword()">[Close]</button>
+        </div>
     </div>
-
-    <div id="ui-layer">
-        <header>
-            <h1>THE WORKERS' THOUGHT CONSTELLATION</h1>
-            <div class="subtitle">Mapping Our Participants' Perspectives</div>
-            
-            <div class="controls">
-                <button class="btn active" id="btn-constellation" onclick="setMode('constellation')">Constellation</button>
-                <button class="btn" id="btn-slogan" onclick="setMode('slogan')">The Demand</button>
-            </div>
-
-            <div class="legend" id="main-legend">
-                <div class="legend-item" onclick="filterNodes('creativity')"><div class="dot" style="background:var(--color-creativity)"></div>Creativity</div>
-                <div class="legend-item" onclick="filterNodes('rights')"><div class="dot" style="background:var(--color-rights)"></div>Rights</div>
-                <div class="legend-item" onclick="filterNodes('democracy')"><div class="dot" style="background:var(--color-democracy)"></div>Democracy</div>
-                <div class="legend-item" onclick="filterNodes('data')"><div class="dot" style="background:var(--color-data)"></div>Data</div>
-                <div class="legend-item" onclick="filterNodes('equity')"><div class="dot" style="background:var(--color-equity)"></div>Equity</div>
-                <div class="legend-item" onclick="filterNodes('economy')"><div class="dot" style="background:var(--color-economy)"></div>Economy</div>
-                <div class="legend-item" onclick="filterNodes('policy')"><div class="dot" style="background:var(--color-policy)"></div>Policy</div>
-                <div class="legend-item" onclick="filterNodes('environment')"><div class="dot" style="background:var(--color-environment)"></div>Environment</div>
-            </div>
-        </header>
-
-        <div id="loudspeaker-panel" class="hidden">
-            <div class="panel-header">
-                <span>Slogan</span>
-                <span id="thought-category">THEME</span>
-            </div>
-            <div id="thought-display">
-                Hover over a node to preview. Click to lock slogan.
-            </div>
-            <div class="instruction" id="close-panel-btn">
-                [CLOSE TRANSMISSION]
+    <div class="xw-body">
+        <div class="xw-grid-col">
+            <div class="xw-grid-label">// Grid</div>
+            <table id="xw-grid"></table>
+        </div>
+        <div class="xw-clues-col">
+            <div class="xw-clues-grid">
+                <div>
+                    <div class="xw-clue-group-title">Across</div>
+                    <div id="xw-across"></div>
+                </div>
+                <div>
+                    <div class="xw-clue-group-title">Down</div>
+                    <div id="xw-down"></div>
+                </div>
             </div>
         </div>
     </div>
+    <div id="xw-congrats">
+        <h2>Transmission Complete</h2>
+        <p>You've decoded the Workers' Governing Technology crossword.</p>
+        <button class="btn" onclick="document.getElementById('xw-congrats').classList.remove('show')">Continue</button>
+    </div>
+</div>
 
-    <div id="tooltip"></div>
+<div id="tooltip"></div>
 
-    <script>
-        // --- DATA & CONFIG ---
-        
-        const themes = {
-            creativity: { color: '#00f2ff', label: 'Creativity & Autonomy' },
-            rights: { color: '#ff4757', label: 'Rights, Governance & Solidarity' },
-            democracy: { color: '#ffa502', label: 'Workplace Democracy' },
-            data: { color: '#2ed573', label: 'Data, Research & Commons' },
-            equity: { color: '#ff6b81', label: 'Equity & Inclusion' },
-            economy: { color: '#a55eea', label: 'Alternative Economy' },
-            policy: { color: '#f1c40f', label: 'Policy & Advocacy' },
-            environment: { color: '#1e90ff', label: 'Environment' }
-        };
+<script>
+// ══════════════════════════════════════════════════════
+//  CONSTELLATION ENGINE
+// ══════════════════════════════════════════════════════
 
-        function cleanText(text) {
-            return text
-                .replace(/some of us\s*lcome/gi, "welcome")
-                .replace(/some of us\s*r/gi, "power")
-                .replace(/betsome of us\s*en/gi, "between")
-                .replace(/some of us\s*llbeing/gi, "wellbeing")
-                .replace(/outsome of us\s*ighs/gi, "outweighs")
-                .replace(/some of us/gi, "We"); 
-        }
+const themes = {
+    creativity:  {color:'#00f2ff', label:'Creativity & Autonomy'},
+    rights:      {color:'#ff4757', label:'Rights, Governance & Solidarity'},
+    democracy:   {color:'#ffa502', label:'Workplace Democracy'},
+    data:        {color:'#2ed573', label:'Data, Research & Commons'},
+    equity:      {color:'#ff6b81', label:'Equity & Inclusion'},
+    economy:     {color:'#a55eea', label:'Alternative Economy'},
+    policy:      {color:'#f1c40f', label:'Policy & Advocacy'},
+    environment: {color:'#1e90ff', label:'Environment'}
+};
 
-        const rawData = [
-            { t: "creativity", text: "A writer can only be identified as a human being. Technology is a tool, never the creator." },
-            { t: "creativity", text: "AI must never be pushed on a worker. It is our choice to use it." },
-            { t: "economy", text: "We reject the narrative that AI is 'inevitable.' Profits for the few do not justify the exploitation of the many." },
-            { t: "rights", text: "We reject the 'inevitability' of technology that depends on the theft of our labour." },
-            { t: "rights", text: "We demand compensation and consent for the use of our archives." },
-            { t: "policy", text: "Government deregulation should not be a tool for corporations to bypass union contracts." },
-            { t: "policy", text: "We welcome solidarity and expertise to strengthen our in-house policy capacity." },
-            { t: "environment", text: "Majority world cannot be the 'sacrificial zones' for Data centre expansions." },
-            { t: "environment", text: "Innovation cannot run on the environmental ruin of our small towns." },
-            { t: "environment", text: "The right of our community to access drinking water outweighs the right of a tech company to train a dataset." },
-            { t: "data", text: "We demand the immediate enforcement of data protection and IP laws." },
-            { t: "rights", text: "Artists, academics, environmentalists, and all citizens stand united against corporate encroachment." },
-            { t: "creativity", text: "We refuse to let our active creativity be reduced to data points used against us." },
-            { t: "data", text: "Transparency in worker data: what is collected, why, and how it is used." },
-            { t: "democracy", text: "Fair profits through transparent productivity metrics." },
-            { t: "rights", text: "Workers must have the right to refuse tasks assigned by an algorithm without fear of sanction." },
-            { t: "democracy", text: "We demand the right to see and negotiate the metrics used to estimate worker productivity." },
-            { t: "democracy", text: "Stopping automated punishments on workers; human review is mandatory." },
-            { t: "democracy", text: "Establish joint committees on health, safety and technology." },
-            { t: "data", text: "Data sovereignty: core digital infrastructures must be managed as public goods." },
-            { t: "rights", text: "We will call out corporations that use AI as a convenient excuse for job cuts." },
-            { t: "democracy", text: "We resolve to build our own technical resources to strengthen union organization." },
-            { t: "equity", text: "We reject the divide between 'high-skill' workers and 'low-skill' workers." },
-            { t: "rights", text: "Mergers must sign neutrality agreements that prevent interference with our right to organize." },
-            { t: "democracy", text: "Checklists to monitor every workplace for unreported software deployments." },
-            { t: "democracy", text: "We demand a notice period for any technological change in our workplace." },
-            { t: "economy", text: "We promote open-source software (like CoopCycle) that belongs to the workers." },
-            { t: "equity", text: "We commit to anti-harassment protocols and promoting leadership roles for women and gender-diverse individuals." },
-            { t: "economy", text: "Building worker-owned platform cooperatives to replace big tech." },
-            { t: "economy", text: "We strive to build a fully alternative economy with our own credit unions and social safety nets." },
-            { t: "democracy", text: "We use the union as a vital resource for conflict resolution." },
-            { t: "creativity", text: "We demand an economy that provides artists with the mental space to be creative." },
-            { t: "rights", text: "We declare internet access a fundamental human right." },
-            { t: "policy", text: "We prioritize secure, internal applications to protect social movements from surveillance." },
-            { t: "economy", text: "We reject the predatory nature of gig apps; gig workers are workers, not contractors." },
-            { t: "economy", text: "When private owners abandon companies, workers have a right to the technical support to reclaim them." },
-            { t: "data", text: "We reject 'one-size-fits-all' software models. We champion tools that reflect plural realities." },
-            { t: "data", text: "Translation of academic research into practical technical assistance for the worker on the shop floor." },
-            { t: "economy", text: "We reject the 'rent extraction' model where outside investors skim value from creators." },
-            { t: "data", text: "Data systems must preserve the right to be forgotten and the right to be credited." },
-            { t: "equity", text: "We acknowledge the systemic exclusion of trans people from formal education." },
-            { t: "equity", text: "We assert that people performing data labeling are the primary experts on AI harms." },
-            { t: "data", text: "We move beyond being 'documented' by academics to identifying our own issues (worker inquiry)." },
-            { t: "democracy", text: "Inter-cooperation to create safe environments for junior members to learn." },
-            { t: "creativity", text: "We 'dare to desire' new forms of technology that prioritize human joy and rest." },
-            { t: "data", text: "We reject proprietary licensing and embrace Creative Commons." },
-            { t: "policy", text: "We use collective knowledge to influence legislators for public policies that protect the solidarity economy." },
-            { t: "policy", text: "The state must investigate the 'black box' of platform algorithms." },
-            { t: "policy", text: "Demand that platform policies be written in the native language of the workers." }
-        ];
+function cleanText(t){
+    return t.replace(/some of us\s*lcome/gi,"welcome")
+            .replace(/some of us\s*r/gi,"power")
+            .replace(/betsome of us\s*en/gi,"between")
+            .replace(/some of us\s*llbeing/gi,"wellbeing")
+            .replace(/outsome of us\s*ighs/gi,"outweighs")
+            .replace(/some of us/gi,"We");
+}
 
-        const slogans = [
-            { t: "creativity", text: "WE ARE NOT DATA POINTS" },
-            { t: "rights", text: "THE RIGHT TO REFUSE" },
-            { t: "environment", text: "WATER > DATA CENTERS" },
-            { t: "democracy", text: "NO ALGORITHMIC MANAGERS, WHERE ARE THE HUMANS?" },
-            { t: "data", text: "DATA SOVEREIGNTY" },
-            { t: "economy", text: "WORKER-OWNED TECHNOLOGIES" },
-            { t: "policy", text: "OPEN THE BLACK BOX" },
-            { t: "equity", text: "NOTHING ABOUT US WITHOUT US" },
-            { t: "economy", text: "PUBLIC GOODS, NOT MONOPOLIES" },
-            { t: "creativity", text: "REST IS OUR RIGHT" },
-            { t: "rights", text: "AI, STOP STEALING OUR WORK" },
-            { t: "policy", text: "YOU SAY INNOVATION, WE SAY ITS EXPLOITATION" }
-        ];
+const rawData=[
+    {t:"creativity",text:"A writer can only be identified as a human being. Technology is a tool, never the creator."},
+    {t:"creativity",text:"AI must never be pushed on a worker. It is our choice to use it."},
+    {t:"economy",text:"We reject the narrative that AI is 'inevitable.' Profits for the few do not justify the exploitation of the many."},
+    {t:"rights",text:"We reject the 'inevitability' of technology that depends on the theft of our labour."},
+    {t:"rights",text:"We demand compensation and consent for the use of our archives."},
+    {t:"policy",text:"Government deregulation should not be a tool for corporations to bypass union contracts."},
+    {t:"policy",text:"We welcome solidarity and expertise to strengthen our in-house policy capacity."},
+    {t:"environment",text:"Majority world cannot be the 'sacrificial zones' for Data centre expansions."},
+    {t:"environment",text:"Innovation cannot run on the environmental ruin of our small towns."},
+    {t:"environment",text:"The right of our community to access drinking water outweighs the right of a tech company to train a dataset."},
+    {t:"data",text:"We demand the immediate enforcement of data protection and IP laws."},
+    {t:"rights",text:"Artists, academics, environmentalists, and all citizens stand united against corporate encroachment."},
+    {t:"creativity",text:"We refuse to let our active creativity be reduced to data points used against us."},
+    {t:"data",text:"Transparency in worker data: what is collected, why, and how it is used."},
+    {t:"democracy",text:"Fair profits through transparent productivity metrics."},
+    {t:"rights",text:"Workers must have the right to refuse tasks assigned by an algorithm without fear of sanction."},
+    {t:"democracy",text:"We demand the right to see and negotiate the metrics used to estimate worker productivity."},
+    {t:"democracy",text:"Stopping automated punishments on workers; human review is mandatory."},
+    {t:"democracy",text:"Establish joint committees on health, safety and technology."},
+    {t:"data",text:"Data sovereignty: core digital infrastructures must be managed as public goods."},
+    {t:"rights",text:"We will call out corporations that use AI as a convenient excuse for job cuts."},
+    {t:"democracy",text:"We resolve to build our own technical resources to strengthen union organization."},
+    {t:"equity",text:"We reject the divide between 'high-skill' workers and 'low-skill' workers."},
+    {t:"rights",text:"Mergers must sign neutrality agreements that prevent interference with our right to organize."},
+    {t:"democracy",text:"Checklists to monitor every workplace for unreported software deployments."},
+    {t:"democracy",text:"We demand a notice period for any technological change in our workplace."},
+    {t:"economy",text:"We promote open-source software (like CoopCycle) that belongs to the workers."},
+    {t:"equity",text:"We commit to anti-harassment protocols and promoting leadership roles for women and gender-diverse individuals."},
+    {t:"economy",text:"Building worker-owned platform cooperatives to replace big tech."},
+    {t:"economy",text:"We strive to build a fully alternative economy with our own credit unions and social safety nets."},
+    {t:"democracy",text:"We use the union as a vital resource for conflict resolution."},
+    {t:"creativity",text:"We demand an economy that provides artists with the mental space to be creative."},
+    {t:"rights",text:"We declare internet access a fundamental human right."},
+    {t:"policy",text:"We prioritize secure, internal applications to protect social movements from surveillance."},
+    {t:"economy",text:"We reject the predatory nature of gig apps; gig workers are workers, not contractors."},
+    {t:"economy",text:"When private owners abandon companies, workers have a right to the technical support to reclaim them."},
+    {t:"data",text:"We reject 'one-size-fits-all' software models. We champion tools that reflect plural realities."},
+    {t:"data",text:"Translation of academic research into practical technical assistance for the worker on the shop floor."},
+    {t:"economy",text:"We reject the 'rent extraction' model where outside investors skim value from creators."},
+    {t:"data",text:"Data systems must preserve the right to be forgotten and the right to be credited."},
+    {t:"equity",text:"We acknowledge the systemic exclusion of trans people from formal education."},
+    {t:"equity",text:"We assert that people performing data labeling are the primary experts on AI harms."},
+    {t:"data",text:"We move beyond being 'documented' by academics to identifying our own issues (worker inquiry)."},
+    {t:"democracy",text:"Inter-cooperation to create safe environments for junior members to learn."},
+    {t:"creativity",text:"We 'dare to desire' new forms of technology that prioritize human joy and rest."},
+    {t:"data",text:"We reject proprietary licensing and embrace Creative Commons."},
+    {t:"policy",text:"We use collective knowledge to influence legislators for public policies that protect the solidarity economy."},
+    {t:"policy",text:"The state must investigate the 'black box' of platform algorithms."},
+    {t:"policy",text:"Demand that platform policies be written in the native language of the workers."}
+];
 
-        // --- SIMULATION SETUP ---
+const slogans=[
+    {t:"creativity",text:"WE ARE NOT DATA POINTS"},
+    {t:"rights",text:"THE RIGHT TO REFUSE"},
+    {t:"environment",text:"WATER > DATA CENTERS"},
+    {t:"democracy",text:"NO ALGORITHMIC MANAGERS, WHERE ARE THE HUMANS?"},
+    {t:"data",text:"DATA SOVEREIGNTY"},
+    {t:"economy",text:"WORKER-OWNED TECHNOLOGIES"},
+    {t:"policy",text:"OPEN THE BLACK BOX"},
+    {t:"equity",text:"NOTHING ABOUT US WITHOUT US"},
+    {t:"economy",text:"PUBLIC GOODS, NOT MONOPOLIES"},
+    {t:"creativity",text:"REST IS OUR RIGHT"},
+    {t:"rights",text:"AI, STOP STEALING OUR WORK"},
+    {t:"policy",text:"YOU SAY INNOVATION, WE SAY ITS EXPLOITATION"}
+];
 
-        const canvas = document.getElementById('constellation-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
+const canvas=document.getElementById('constellation-canvas');
+const ctx=canvas.getContext('2d');
+let width = 0, height = 0;
+const START_TIME=Date.now();
+const TRANSITION_DELAY=60000;
+let currentMode='constellation';
+let nodes=[];
+const TARGET_NODE_COUNT=500;
+const connectionsDistance=140;
+const equilibriumDistance=120;
+const mouseDistance=200;
+const mouse={x:null,y:null};
+let activeFilter=null;
+let selectedNode=null;
 
-        // State Variables
-        const START_TIME = Date.now();
-        const TRANSITION_DELAY = 60000; 
-        let currentMode = 'constellation'; 
+function initData(){
+    if (width <= 0 || height <= 0) return;
+    nodes=[];
+    slogans.forEach(item=>{
+        nodes.push({x:Math.random()*width,y:Math.random()*height,
+            vx:(Math.random()-0.5)*0.05,vy:(Math.random()-0.5)*0.05,
+            text:item.text,category:item.t,color:themes[item.t].color,
+            radius:6,isSlogan:true,hovered:false,targetX:null,targetY:null,locked:false});
+    });
+    let di=0;
+    while(nodes.length<TARGET_NODE_COUNT){
+        const item=rawData[di%rawData.length];
+        nodes.push({x:Math.random()*width,y:Math.random()*height,
+            vx:(Math.random()-0.5)*0.1,vy:(Math.random()-0.5)*0.1,
+            text:cleanText(item.text),category:item.t,color:themes[item.t].color,
+            radius:Math.random()*2+1,isSlogan:false,hovered:false,targetX:null,targetY:null,locked:false});
+        di++;
+    }
+}
 
-        // Particle System
-        let nodes = [];
-        const TARGET_NODE_COUNT = 500; // Increased for higher density
-        const connectionsDistance = 140; 
-        const equilibriumDistance = 120;
-        const mouseDistance = 200;
-
-        // Interaction State
-        const mouse = { x: null, y: null };
-        let activeFilter = null;
-        let selectedNode = null;
-
-        // Initialize Data
-        function initData() {
-            nodes = [];
-
-            // 1. Add Major Slogan Nodes
-            slogans.forEach(item => {
-                nodes.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    vx: (Math.random() - 0.5) * 0.05,
-                    vy: (Math.random() - 0.5) * 0.05,
-                    text: item.text,
-                    category: item.t,
-                    color: themes[item.t].color,
-                    radius: 6, 
-                    isSlogan: true,
-                    hovered: false,
-                    targetX: null,
-                    targetY: null,
-                    locked: false // New property for snap-to-grid
-                });
-            });
-
-            // 2. Fill with Standard Thoughts
-            let dataIndex = 0;
-            while (nodes.length < TARGET_NODE_COUNT) {
-                const item = rawData[dataIndex % rawData.length];
-                nodes.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    vx: (Math.random() - 0.5) * 0.1,
-                    vy: (Math.random() - 0.5) * 0.1,
-                    text: cleanText(item.text),
-                    category: item.t,
-                    color: themes[item.t].color,
-                    radius: Math.random() * 2 + 1, // Slightly smaller variance
-                    isSlogan: false,
-                    hovered: false,
-                    targetX: null,
-                    targetY: null,
-                    locked: false
-                });
-                dataIndex++;
+function calculateSloganTargets(){
+    const safeWidth = Math.max(1, Math.floor(width));
+    const safeHeight = Math.max(1, Math.floor(height));
+    const tc=document.createElement('canvas');
+    tc.width=safeWidth;
+    tc.height=safeHeight;
+    const tCtx=tc.getContext('2d');
+    tCtx.fillStyle='black';
+    tCtx.fillRect(0,0,safeWidth,safeHeight);
+    tCtx.fillStyle='white';
+    tCtx.font='900 '+(safeWidth*0.05)+'px Inter,system-ui,sans-serif';
+    tCtx.textAlign='center';tCtx.textBaseline='middle';
+    const lines=["WORKERS'","GOVERNING","TECHNOLOGY"];
+    const lh=safeWidth*0.06,sy=safeHeight/2-lh;
+    lines.forEach((l,i)=>tCtx.fillText(l,safeWidth/2,sy+(i*lh)));
+    let id;
+    try {
+        id = tCtx.getImageData(0,0,safeWidth,safeHeight).data;
+    } catch(e) {
+        console.error("Slogan target calculation failed:", e);
+        return;
+    }
+    let vp=[],ep=[],step=4;
+    for(let y=1;y<safeHeight-1;y+=step){
+        for(let x=1;x<safeWidth-1;x+=step){
+            const idx=(y*safeWidth+x)*4;
+            if(id[idx]>100){
+                const l=id[idx-4],r=id[idx+4],u=id[((y-1)*safeWidth+x)*4],d=id[((y+1)*safeWidth+x)*4];
+                (l<100||r<100||u<100||d<100)?ep.push({x,y}):vp.push({x,y});
             }
         }
+    }
+    vp.sort(()=>Math.random()-0.5);ep.sort(()=>Math.random()-0.5);
+    let ei=0,fi=0;
+    nodes.forEach((n,i)=>{
+        let t=null;
+        if(i%3===0&&ei<ep.length)t=ep[ei++];
+        else if(fi<vp.length)t=vp[fi++];
+        else if(ei<ep.length)t=ep[ei++];
+        n.targetX=t?t.x:safeWidth/2;n.targetY=t?t.y:safeHeight/2;n.locked=false;
+    });
+}
 
-        // --- SLOGAN FORMATION LOGIC ---
+window.setMode=function(mode){
+    currentMode=mode;
+    document.getElementById('btn-constellation').classList.toggle('active',mode==='constellation');
+    document.getElementById('btn-slogan').classList.toggle('active',mode==='slogan');
+    const sc=document.getElementById('final-slogan-container');
+    const legend=document.getElementById('main-legend');
+    if(mode==='slogan'){
+        if(width > 0 && height > 0) calculateSloganTargets();
+        sc.style.opacity='1';
+        legend.style.opacity='0';legend.style.pointerEvents='none';
+    } else {
+        sc.style.opacity='0';
+        legend.style.opacity='1';legend.style.pointerEvents='auto';
+        nodes.forEach(n=>{n.locked=false;n.vx=(Math.random()-0.5)*2;n.vy=(Math.random()-0.5)*2;});
+    }
+};
 
-        function calculateSloganTargets() {
-            // 1. Create temporary canvas
-            const tempCanvas = document.createElement('canvas');
-            const tCtx = tempCanvas.getContext('2d');
-            tempCanvas.width = width;
-            tempCanvas.height = height;
+function resize(){
+    width=canvas.width=Math.floor(window.innerWidth);
+    height=canvas.height=Math.floor(window.innerHeight);
+    if(nodes.length===0 && width > 0 && height > 0) initData();
+    if(currentMode==='slogan' && width > 0 && height > 0) calculateSloganTargets();
+}
+window.addEventListener('resize',resize);
+resize();
 
-            // 2. Settings - Matches CSS but higher contrast for sampling
-            tCtx.fillStyle = 'black';
-            tCtx.fillRect(0,0, width, height);
-            tCtx.fillStyle = 'white';
-            // Use a bold sans-serif for cleaner edge detection
-            tCtx.font = '900 ' + (width * 0.05) + 'px Inter, system-ui, sans-serif'; 
-            tCtx.textAlign = 'center';
-            tCtx.textBaseline = 'middle';
-            
-            // 3. Draw Text
-            const lines = ["WORKERS'", "GOVERNING", "TECHNOLOGY"];
-            const lineHeight = width * 0.06;
-            const startY = height / 2 - lineHeight;
-            
-            lines.forEach((line, i) => {
-                tCtx.fillText(line, width / 2, startY + (i * lineHeight));
-            });
+function hexToRgb(h){
+    var r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+    return r?`${parseInt(r[1],16)}, ${parseInt(r[2],16)}, ${parseInt(r[3],16)}`:'255,255,255';
+}
 
-            // 4. Sample Pixels with Edge Detection
-            // We want points ON the text, but also prioritize edges for sharpness
-            const imageData = tCtx.getImageData(0, 0, width, height).data;
-            let validPoints = [];
-            let edgePoints = [];
-            const step = 4; // High resolution sampling
-
-            for (let y = 1; y < height - 1; y += step) {
-                for (let x = 1; x < width - 1; x += step) {
-                    const idx = (y * width + x) * 4;
-                    if (imageData[idx] > 100) { // If pixel is white
-                        // Check neighbors to see if it's an edge
-                        const left = imageData[idx - 4];
-                        const right = imageData[idx + 4];
-                        const up = imageData[((y-1) * width + x) * 4];
-                        const down = imageData[((y+1) * width + x) * 4];
-                        
-                        if (left < 100 || right < 100 || up < 100 || down < 100) {
-                            edgePoints.push({x, y});
-                        } else {
-                            validPoints.push({x, y});
-                        }
+function animate(){
+    requestAnimationFrame(animate);
+    if (width <= 0 || height <= 0) return;
+    ctx.clearRect(0,0,width,height);
+    if(currentMode==='constellation'&&Date.now()-START_TIME>TRANSITION_DELAY)setMode('slogan');
+    ctx.lineWidth=0.5;
+    for(let i=0;i<nodes.length;i++){
+        let p1=nodes[i];
+        if(currentMode==='constellation'&&activeFilter&&p1.category!==activeFilter)continue;
+        if(currentMode==='constellation'){
+            for(let j=i+1;j<nodes.length;j++){
+                let p2=nodes[j];
+                if(Math.abs(i-j)>50&&p1.category===p2.category)continue;
+                if(p1.category===p2.category){
+                    let dx=p2.x-p1.x,dy=p2.y-p1.y,dist=Math.sqrt(dx*dx+dy*dy);
+                    if(dist<connectionsDistance){
+                        let op=1-(dist/connectionsDistance);
+                        ctx.strokeStyle=`rgba(${hexToRgb(p1.color)},${op*0.3})`;
+                        ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+                        const disp=dist-equilibriumDistance,fx=(dx/dist)*disp*0.00005,fy=(dy/dist)*disp*0.00005;
+                        p1.vx+=fx;p1.vy+=fy;p2.vx-=fx;p2.vy-=fy;
                     }
                 }
             }
-
-            // 5. Shuffle points
-            validPoints.sort(() => Math.random() - 0.5);
-            edgePoints.sort(() => Math.random() - 0.5);
-
-            // 6. Assign targets
-            // Prioritize edge points for sharpness, then fill
-            let edgeIndex = 0;
-            let fillIndex = 0;
-
-            nodes.forEach((node, i) => {
-                let target = null;
-                
-                // Distribute ~40% of nodes to edges for crisp outline
-                if (i % 3 === 0 && edgeIndex < edgePoints.length) {
-                    target = edgePoints[edgeIndex++];
-                } else if (fillIndex < validPoints.length) {
-                    target = validPoints[fillIndex++];
-                } else if (edgeIndex < edgePoints.length) {
-                    target = edgePoints[edgeIndex++];
-                }
-
-                if (target) {
-                    node.targetX = target.x;
-                    node.targetY = target.y;
-                } else {
-                    // Fallback to center if screen is massive
-                    node.targetX = width/2;
-                    node.targetY = height/2;
-                }
-                node.locked = false; // Reset lock state
-            });
-        }
-
-        // --- MODE CONTROL ---
-
-        window.setMode = function(mode) {
-            currentMode = mode;
-            
-            // Update UI buttons
-            document.getElementById('btn-constellation').classList.toggle('active', mode === 'constellation');
-            document.getElementById('btn-slogan').classList.toggle('active', mode === 'slogan');
-
-            const sloganContainer = document.getElementById('final-slogan-container');
-            const legend = document.getElementById('main-legend');
-
-            if (mode === 'slogan') {
-                calculateSloganTargets();
-                sloganContainer.style.opacity = '1';
-                legend.style.opacity = '0';
-                legend.style.pointerEvents = 'none';
-            } else {
-                sloganContainer.style.opacity = '0';
-                legend.style.opacity = '1';
-                legend.style.pointerEvents = 'auto';
-                
-                // Unlock all nodes
-                nodes.forEach(n => {
-                    n.locked = false;
-                    // Give them a random nudge to break formation naturally
-                    n.vx = (Math.random() - 0.5) * 2;
-                    n.vy = (Math.random() - 0.5) * 2;
-                });
+            if(mouse.x!=null){
+                let dx=mouse.x-p1.x,dy=mouse.y-p1.y,dist=Math.sqrt(dx*dx+dy*dy);
+                if(dist<mouseDistance){const f=(mouseDistance-dist)/mouseDistance;p1.vx-=(dx/dist)*f*0.5;p1.vy-=(dy/dist)*f*0.5;}
             }
+            p1.vx+=(width/2-p1.x)*0.00001;p1.vy+=(height/2-p1.y)*0.00001;
+            p1.vx*=0.99;p1.vy*=0.99;
+        } else if(currentMode==='slogan'&&p1.targetX!==null){
+            if(!p1.locked){
+                const dx=p1.targetX-p1.x,dy=p1.targetY-p1.y,dist=Math.sqrt(dx*dx+dy*dy);
+                if(dist<1){p1.x=p1.targetX;p1.y=p1.targetY;p1.locked=true;}
+                else{p1.vx=dx*0.05;p1.vy=dy*0.05;p1.vx*=0.9;p1.vy*=0.9;}
+            } else {p1.x=p1.targetX;p1.y=p1.targetY;p1.vx=0;p1.vy=0;}
         }
-
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            if(nodes.length === 0) initData();
-            if (currentMode === 'slogan') calculateSloganTargets();
+        if(!p1.locked){p1.x+=p1.vx;p1.y+=p1.vy;}
+        if(currentMode==='constellation'){
+            if(p1.x<0||p1.x>width)p1.vx*=-1;
+            if(p1.y<0||p1.y>height)p1.vy*=-1;
         }
+        let isDimmed=currentMode==='constellation'&&activeFilter&&p1.category!==activeFilter;
+        ctx.beginPath();
+        ctx.arc(p1.x,p1.y,isDimmed?1:p1.radius,0,Math.PI*2);
+        if(p1.hovered||p1===selectedNode){ctx.shadowBlur=15;ctx.shadowColor=p1.color;ctx.fillStyle='#ffffff';}
+        else{ctx.shadowBlur=0;ctx.fillStyle=isDimmed?'#333':p1.color;}
+        ctx.fill();ctx.shadowBlur=0;
+        if(currentMode==='constellation'&&p1.isSlogan&&!isDimmed){
+            ctx.font='bold 11px Courier New';ctx.fillStyle=p1.color;ctx.textAlign='center';
+            ctx.fillText(p1.text,p1.x,p1.y-14);
+        }
+    }
+}
 
-        window.addEventListener('resize', resize);
-        resize();
-
-        // --- PHYSICS & RENDERING ---
-
-        function animate() {
-            requestAnimationFrame(animate);
-            ctx.clearRect(0, 0, width, height);
-
-            // Auto-trigger timer check
-            if (currentMode === 'constellation' && Date.now() - START_TIME > TRANSITION_DELAY) {
-                setMode('slogan');
+canvas.addEventListener('mousemove',(e)=>{
+    if(document.getElementById('crossword-panel').classList.contains('open'))return;
+    mouse.x=e.clientX;mouse.y=e.clientY;
+    let hovering=false;
+    const tooltip=document.getElementById('tooltip');
+    for(let i=nodes.length-1;i>=0;i--){
+        let node=nodes[i];
+        let dx=mouse.x-node.x,dy=mouse.y-node.y;
+        if(Math.abs(dx)>20||Math.abs(dy)>20){node.hovered=false;continue;}
+        let dist=Math.sqrt(dx*dx+dy*dy);
+        const hitDist=node.isSlogan?30:15;
+        if(dist<hitDist){
+            node.hovered=true;hovering=true;
+            if(!node.isSlogan&&currentMode==='constellation'){
+                tooltip.style.display='block';
+                tooltip.style.left=(e.clientX+15)+'px';tooltip.style.top=(e.clientY+15)+'px';
+                tooltip.innerText=themes[node.category].label;
+                tooltip.style.borderColor=node.color;
             }
+            break;
+        } else {node.hovered=false;}
+    }
+    if(!hovering)tooltip.style.display='none';
+    canvas.style.cursor=hovering?'pointer':'default';
+});
+canvas.addEventListener('mouseleave',()=>{mouse.x=null;mouse.y=null;});
 
-            ctx.lineWidth = 0.5;
-            
-            for (let i = 0; i < nodes.length; i++) {
-                let p1 = nodes[i];
-                
-                // Skip if filtered out (only in constellation mode)
-                if (currentMode === 'constellation' && activeFilter && p1.category !== activeFilter) {
-                    continue; 
-                }
+canvas.addEventListener('click',(e)=>{
+    if(document.getElementById('crossword-panel').classList.contains('open'))return;
+    for(let i=nodes.length-1;i>=0;i--){
+        let node=nodes[i];
+        let dx=e.clientX-node.x,dy=e.clientY-node.y,dist=Math.sqrt(dx*dx+dy*dy);
+        const hitDist=node.isSlogan?30:15;
+        if(dist<hitDist){selectedNode=node;displayThought(node);return;}
+    }
+});
 
-                // --- MODE 1: CONSTELLATION ---
-                if (currentMode === 'constellation') {
-                    
-                    // Connection Lines
-                    for (let j = i + 1; j < nodes.length; j++) {
-                        let p2 = nodes[j];
-                        // Only connect relatively close indices to improve perf with 500 nodes
-                        if (Math.abs(i - j) > 50 && p1.category === p2.category) continue; 
+const panel=document.getElementById('loudspeaker-panel');
+const thoughtDisplay=document.getElementById('thought-display');
+const categoryDisplay=document.getElementById('thought-category');
+document.getElementById('close-panel-btn').addEventListener('click',()=>{
+    panel.classList.add('hidden');selectedNode=null;
+});
 
-                        if (p1.category === p2.category) {
-                            let dx = p2.x - p1.x;
-                            let dy = p2.y - p1.y;
-                            let dist = Math.sqrt(dx*dx + dy*dy);
+function displayThought(node){
+    panel.classList.remove('hidden');
+    categoryDisplay.innerText=themes[node.category].label;
+    categoryDisplay.style.color=node.color;
+    thoughtDisplay.style.opacity=0;
+    setTimeout(()=>{
+        thoughtDisplay.innerHTML=`"${node.text}"`;
+        thoughtDisplay.style.opacity=1;
+        thoughtDisplay.style.transition="opacity(0.3s)";
+    },100);
+    panel.style.boxShadow=`0 0 30px ${node.color}40`;
+    panel.style.borderColor=node.color;
+}
 
-                            if (dist < connectionsDistance) {
-                                let opacity = 1 - (dist / connectionsDistance);
-                                ctx.strokeStyle = `rgba(${hexToRgb(p1.color)}, ${opacity * 0.3})`;
-                                ctx.beginPath();
-                                ctx.moveTo(p1.x, p1.y);
-                                ctx.lineTo(p2.x, p2.y);
-                                ctx.stroke();
+window.filterNodes=function(category){
+    activeFilter=(activeFilter===category)?null:category;
+};
 
-                                // Spring Force
-                                const displacement = dist - equilibriumDistance;
-                                const fx = (dx / dist) * displacement * 0.00005;
-                                const fy = (dy / dist) * displacement * 0.00005;
+// Start animation only after first resize
+window.onload = function() {
+    resize();
+    animate();
+}
 
-                                p1.vx += fx;
-                                p1.vy += fy;
-                                p2.vx -= fx;
-                                p2.vy -= fy;
-                            }
-                        }
-                    }
 
-                    // Mouse Repel
-                    if (mouse.x != null) {
-                        let dx = mouse.x - p1.x;
-                        let dy = mouse.y - p1.y;
-                        let dist = Math.sqrt(dx*dx + dy*dy);
-                        if (dist < mouseDistance) {
-                            const force = (mouseDistance - dist) / mouseDistance;
-                            p1.vx -= (dx / dist) * force * 0.5;
-                            p1.vy -= (dy / dist) * force * 0.5;
-                        }
-                    }
-                    
-                    // Friction & Gravity
-                    p1.vx += (width/2 - p1.x) * 0.00001;
-                    p1.vy += (height/2 - p1.y) * 0.00001;
-                    p1.vx *= 0.99;
-                    p1.vy *= 0.99;
+// ══════════════════════════════════════════════════════
+//  CROSSWORD ENGINE
+// ══════════════════════════════════════════════════════
 
-                } 
-                // --- MODE 2: SLOGAN (SNAP TO GRID) ---
-                else if (currentMode === 'slogan' && p1.targetX !== null) {
-                    
-                    if (!p1.locked) {
-                        const dx = p1.targetX - p1.x;
-                        const dy = p1.targetY - p1.y;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
-                        
-                        // SNAP LOGIC: If very close, stop moving
-                        if (dist < 1) {
-                            p1.x = p1.targetX;
-                            p1.y = p1.targetY;
-                            p1.locked = true;
-                        } else {
-                            // Ease towards target
-                            // Variable speed based on distance for natural feel
-                            const speed = dist * 0.05 + 0.02;
-                            p1.vx = dx * 0.05;
-                            p1.vy = dy * 0.05;
-                            
-                            p1.vx *= 0.9;
-                            p1.vy *= 0.9;
-                        }
-                    } else {
-                        // Keep locked in place
-                        p1.x = p1.targetX;
-                        p1.y = p1.targetY;
-                        p1.vx = 0;
-                        p1.vy = 0;
-                    }
-                }
+const XW_WORDS = [
+   {word:"INTERCOOPERATION",row:15,col:7, dir:"H",num:14,theme:"economy"},
+   {word:"CREATIVECOMMONS", row:6, col:14,dir:"V",num:6, theme:"data"},
+   {word:"PARTICIPATORY",   row:9, col:13,dir:"H",num:10,theme:"democracy"},
+   {word:"DIGITALSOLIDARITYECONOMIES", row:11,col:5, dir:"H",num:12,theme:"economy"},
+   {word:"INTELLECTUALPROPERTY", row:20,col:9, dir:"H",num:15,theme:"creativity"},
+   {word:"ARTEESETICA",     row:18,col:17,dir:"V",num:16,theme:"environment"},
+   {word:"DATACENTERS",     row:2, col:22,dir:"V",num:1, theme:"environment"},
+   {word:"COOPCYCLE",       row:6, col:8, dir:"H",num:5, theme:"economy"},
+   {word:"COOPYLEFT",       row:14,col:21,dir:"V",num:13,theme:"rights"},
+   {word:"UNIONIZED",       row:8, col:21,dir:"H",num:9, theme:"democracy"},
+   {word:"WHATSAPP",        row:4, col:5, dir:"V",num:2, theme:"democracy"},
+   {word:"SUBVERT",         row:10,col:6, dir:"V",num:11,theme:"economy"},
+   {word:"GAMING",          row:5, col:26,dir:"V",num:4, theme:"democracy"},
+   {word:"WRITER",          row:7, col:13,dir:"H",num:7, theme:"creativity"},
+   {word:"PROFIT",          row:4, col:9, dir:"V",num:3, theme:"economy"},
+   {word:"MESH",            row:7, col:28,dir:"V",num:8, theme:"economy"},
+];
 
-                // Update Position
-                if (!p1.locked) {
-                    p1.x += p1.vx;
-                    p1.y += p1.vy;
-                }
+const XW_CLUES = {
+   across:{
+       5: " federation of bike logistics messengers in Europe that aims to reduce carbon emissions in urban logistics transport. It has developed a platform that supports worker-owned bike delivery cooperatives",
+       7: "The 2023 Hollywood writers’ Memorandum of Agreement states that generative AI cannot be recognised as a  ___",
+       9: "Seize the Means Video Co-op, based in Vancouver, is an example of a ____ worker Cooperative. Apart from ensuring worker ownership, they also have collective agreements as an additional layer of protection and checks and balances for worker-members.",
+       10:"Workers Inquiry as a Research Methodology (WIRM) emphasizes a ___, worker-led approach that centers workers’ knowledge, fosters self-expression, and strengthens organizing capacity",
+       12:"The diverse practices, technologies, and organisational forms that challenge extractive models of the digital economy by embedding principles of cooperation, mutual aid, and shared ownership into data governance, platforms, and artificial intelligence is identified as ?",
+       14:"The solidarity principle emphasising collaboration, shared resources, and mutual support between cooperatives, as demonstrated by Argentine Federation of Worker Cooperatives in Technology, Innovation and Knowledge (FACTTIC) when adapting the CoopCycle delivery platform for Argentina is called",
+       15:"What artists seek to protect when AI uses their work without permission", 
+   },
+   down:{
+       1: "In Colón, Mexico, severe ecological crises including water shortages are caused by the installation of multiple ______",
+       2: "The Tech Sector of the Homeless Worker Movement in Brazil (MTST)’s Hire Who Fights' initiative uses which communication tool to connect workers with jobs?",
+       3: "What Stocksy prioritises human value over the pursuit of",
+       4: "In what industry did workers at Bethesda Studios unionise in 2024, join the Communications Workers of America, and gain recognition from Microsoft?",
+       6: "A flexible copyright licence that lets creators legally share, adapt, and distribute their work while specifying which rights they retain, encouraging open access to creative content",
+       8: "The __ cooperativism emphasises networks of loosely-affiliated, interoperable, local-scale systems",
+       11:"Cooperative building a Bandcamp-style marketplace owned and controlled by artists, labels, supporters, and workers. They envision an organizational structure where a cooperative wholly owns a corporation, maintaining collective control while allowing it to raise funds for future goals",
+       13:"A licence that allows only cooperatives or non-profit projects to use the software. It protects collective work from appropriation by capitalist actors while encouraging its circulation within solidarity networks",
+       16:"Non-profit collective founded in 2022 by Latin American and Spanish creatives to address generative AI’s impact on human creativity and the ecological effects of data centers.",
+   }
+};
 
-                // Bounce (Constellation only)
-                if (currentMode === 'constellation') {
-                    if (p1.x < 0 || p1.x > width) p1.vx *= -1;
-                    if (p1.y < 0 || p1.y > height) p1.vy *= -1;
-                }
+const xwCells = {};
+const xwWordMap = {};
+XW_WORDS.forEach(w=>{
+    xwWordMap[w.num+w.dir]=w;
+    for(let i=0;i<w.word.length;i++){
+        const r=w.dir==='H'?w.row:w.row+i;
+        const c=w.dir==='H'?w.col+i:w.col;
+        const k=r+','+c;
+        if(!xwCells[k]) xwCells[k]={letter:w.word[i],num:null,wordRefs:[]};
+        xwCells[k].wordRefs.push({num:w.num,dir:w.dir,theme:w.theme});
+    }
+});
+XW_WORDS.forEach(w=>{ xwCells[w.row+','+w.col].num=w.num; });
 
-                // Draw Node
-                let isDimmed = currentMode === 'constellation' && activeFilter && p1.category !== activeFilter;
-                
-                ctx.beginPath();
-                ctx.arc(p1.x, p1.y, isDimmed ? 1 : p1.radius, 0, Math.PI * 2);
-                
-                if (p1.hovered || p1 === selectedNode) {
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = p1.color;
-                    ctx.fillStyle = '#ffffff';
-                } else {
-                    ctx.shadowBlur = 0;
-                    ctx.fillStyle = isDimmed ? '#333' : p1.color;
-                }
-                ctx.fill();
-                ctx.shadowBlur = 0;
+let xwMinR=99,xwMaxR=0,xwMinC=99,xwMaxC=0;
+Object.keys(xwCells).forEach(k=>{
+    const[r,c]=k.split(',').map(Number);
+    if(r<xwMinR)xwMinR=r;if(r>xwMaxR)xwMaxR=r;
+    if(c<xwMinC)xwMinC=c;if(c>xwMaxC)xwMaxC=c;
+});
 
-                // Draw Labels (Constellation only)
-                if (currentMode === 'constellation' && p1.isSlogan && !isDimmed) {
-                    ctx.font = 'bold 11px Courier New';
-                    ctx.fillStyle = p1.color;
-                    ctx.textAlign = 'center';
-                    ctx.fillText(p1.text, p1.x, p1.y - 14);
-                }
+const xwTable=document.getElementById('xw-grid');
+for(let r=xwMinR;r<=xwMaxR;r++){
+    const tr=document.createElement('tr');
+    for(let c=xwMinC;c<=xwMaxC;c++){
+        const td=document.createElement('td');
+        const k=r+','+c;
+        if(xwCells[k]){
+            td.className='xw-cell';td.dataset.r=r;td.dataset.c=c;
+            if(xwCells[k].num){
+                const ns=document.createElement('span');
+                ns.className='cell-num';ns.textContent=xwCells[k].num;
+                td.appendChild(ns);
             }
-        }
+            const inp=document.createElement('input');
+            inp.type='text';inp.maxLength=1;inp.dataset.r=r;inp.dataset.c=c;inp.autocomplete='off';
+            inp.addEventListener('click',()=>xwSelectCell(r,c));
+            inp.addEventListener('keydown',e=>xwKey(e,r,c));
+            inp.addEventListener('input',e=>xwInput(e,r,c));
+            td.appendChild(inp);
+        } else {td.className='xw-black';}
+        tr.appendChild(td);
+    }
+    xwTable.appendChild(tr);
+}
 
-        function hexToRgb(hex) {
-            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 255, 255';
-        }
+function buildClueList(dir,containerId,clueObj){
+    const cont=document.getElementById(containerId);
+    Object.keys(clueObj).map(Number).sort((a,b)=>a-b).forEach(num=>{
+        const w=XW_WORDS.find(x=>x.num===num&&x.dir===(dir==='A'?'H':'V'));
+        const div=document.createElement('div');
+        div.className='clue-item'+(w?' tc-'+w.theme:'');
+        div.id='xwclue-'+num+dir;div.dataset.num=num;div.dataset.dir=dir;
+        div.innerHTML=`<span class="clue-num">${num}</span><span>${clueObj[num]}</span>`;
+        div.addEventListener('click',()=>xwSelectWord(num,dir));
+        cont.appendChild(div);
+    });
+}
+buildClueList('A','xw-across',XW_CLUES.across);
+buildClueList('D','xw-down',XW_CLUES.down);
 
-        // --- INTERACTION ---
+let xwActiveCell=null,xwDir='H',xwActiveNum=null;
 
-        canvas.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-            
-            let hovering = false;
-            let tooltip = document.getElementById('tooltip');
+function xwGetCell(r,c){return document.querySelector(`#crossword-panel td[data-r="${r}"][data-c="${c}"]`);}
+function xwGetInput(r,c){return document.querySelector(`#crossword-panel input[data-r="${r}"][data-c="${c}"]`);}
 
-            // Optimize search: loop backwards, stop at first hit
-            for (let i = nodes.length - 1; i >= 0; i--) {
-                let node = nodes[i];
-                let dx = mouse.x - node.x;
-                let dy = mouse.y - node.y;
-                // Simple box check first for speed
-                if (Math.abs(dx) > 20 || Math.abs(dy) > 20) {
-                    node.hovered = false;
-                    continue;
-                }
-                
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                const hitDist = node.isSlogan ? 30 : 15;
+function xwCurrentTheme(){
+    if(!xwActiveNum)return'';
+    const w=xwWordMap[xwActiveNum+xwDir];return w?w.theme:'';
+}
 
-                if (dist < hitDist) {
-                    node.hovered = true;
-                    hovering = true;
-                    
-                    if (!node.isSlogan && currentMode === 'constellation') {
-                        tooltip.style.display = 'block';
-                        tooltip.style.left = (e.clientX + 15) + 'px';
-                        tooltip.style.top = (e.clientY + 15) + 'px';
-                        tooltip.innerText = themes[node.category].label;
-                        tooltip.style.borderColor = node.color;
-                    }
-                    break; // Only hover one at a time
-                } else {
-                    node.hovered = false;
-                }
+function xwSelectCell(r,c){
+    const k=r+','+c;if(!xwCells[k])return;
+    const refs=xwCells[k].wordRefs;
+    if(xwActiveCell&&xwActiveCell[0]===r&&xwActiveCell[1]===c){
+        const dirs=refs.map(x=>x.dir);
+        if(dirs.includes('H')&&dirs.includes('V'))xwDir=xwDir==='H'?'V':'H';
+    } else {
+        const dirs=refs.map(x=>x.dir);
+        if(!dirs.includes(xwDir))xwDir=dirs[0];
+    }
+    xwActiveCell=[r,c];
+    const ref=refs.find(x=>x.dir===xwDir);
+    xwActiveNum=ref?ref.num:null;
+    xwHighlight();xwGetInput(r,c)?.focus();
+}
+
+function xwSelectWord(num,dir){
+    const d=dir==='A'?'H':'V';
+    const w=xwWordMap[num+d];if(!w)return;
+    xwDir=d;xwActiveNum=num;xwActiveCell=[w.row,w.col];
+    xwHighlight();xwGetInput(w.row,w.col)?.focus();
+}
+
+function xwHighlight(){
+    document.querySelectorAll('#crossword-panel .xw-cell').forEach(td=>{
+        td.classList.remove('active','in-word');
+        Object.keys(themes).forEach(t=>td.classList.remove('tc-'+t));
+    });
+    document.querySelectorAll('.clue-item').forEach(el=>el.classList.remove('active'));
+    if(!xwActiveCell)return;
+    const th=xwCurrentTheme();
+    if(xwActiveNum){
+        const w=xwWordMap[xwActiveNum+xwDir];
+        if(w){
+            for(let i=0;i<w.word.length;i++){
+                const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
+                const td=xwGetCell(r,c);
+                if(td){td.classList.add('in-word');if(th)td.classList.add('tc-'+th);}
             }
-
-            if (!hovering) tooltip.style.display = 'none';
-            canvas.style.cursor = hovering ? 'pointer' : 'default';
-        });
-
-        canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
-
-        canvas.addEventListener('click', (e) => {
-            for (let i = nodes.length - 1; i >= 0; i--) {
-                let node = nodes[i];
-                let dx = e.clientX - node.x;
-                let dy = e.clientY - node.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                const hitDist = node.isSlogan ? 30 : 15;
-
-                if (dist < hitDist) {
-                    selectedNode = node;
-                    displayThought(node);
-                    return;
-                }
-            }
-        });
-
-        const panel = document.getElementById('loudspeaker-panel');
-        const thoughtDisplay = document.getElementById('thought-display');
-        const categoryDisplay = document.getElementById('thought-category');
-        const closeBtn = document.getElementById('close-panel-btn');
-
-        function displayThought(node) {
-            panel.classList.remove('hidden');
-            categoryDisplay.innerText = themes[node.category].label;
-            categoryDisplay.style.color = node.color;
-            thoughtDisplay.style.opacity = 0;
-            setTimeout(() => {
-                thoughtDisplay.innerHTML = `"${node.text}"`;
-                thoughtDisplay.style.opacity = 1;
-                thoughtDisplay.style.transition = "opacity 0.3s";
-            }, 100);
-            panel.style.boxShadow = `0 0 30px ${node.color}40`;
-            panel.style.borderColor = node.color;
+            const cd=xwDir==='H'?'A':'D';
+            const ce=document.getElementById('xwclue-'+xwActiveNum+cd);
+            if(ce){ce.classList.add('active');ce.scrollIntoView({block:'nearest',behavior:'smooth'});}
         }
+    }
+    const atd=xwGetCell(xwActiveCell[0],xwActiveCell[1]);
+    if(atd){atd.classList.add('active');if(th)atd.classList.add('tc-'+th);}
+}
 
-        function closePanel() {
-            panel.classList.add('hidden');
-            selectedNode = null;
+function xwInput(e,r,c){
+    const inp=e.target;
+    const v=inp.value.toUpperCase().replace(/[^A-Z]/g,'');
+    inp.value=v?v[v.length-1]:'';
+    if(inp.value)xwMoveForward(r,c);
+    xwUpdateProgress();
+}
+
+function xwKey(e,r,c){
+    if(e.key==='Backspace'){
+        const inp=xwGetInput(r,c);
+        if(inp&&inp.value){inp.value='';xwUpdateProgress();}
+        else xwMoveBack(r,c);
+        e.preventDefault();
+    } else if(e.key==='ArrowRight'){xwMoveDir(r,c,0,1);e.preventDefault();}
+    else if(e.key==='ArrowLeft'){xwMoveDir(r,c,0,-1);e.preventDefault();}
+    else if(e.key==='ArrowDown'){xwMoveDir(r,c,1,0);e.preventDefault();}
+    else if(e.key==='ArrowUp'){xwMoveDir(r,c,-1,0);e.preventDefault();}
+    else if(e.key==='Tab'){e.preventDefault();xwNextWord(e.shiftKey);}
+}
+
+function xwMoveDir(r,c,dr,dc){
+    const nr=r+dr,nc=c+dc;
+    if(xwCells[nr+','+nc]){
+        if(dr!==0&&dc===0)xwDir='V';
+        if(dr===0&&dc!==0)xwDir='H';
+        xwSelectCell(nr,nc);
+    }
+}
+function xwMoveForward(r,c){
+    if(!xwActiveNum)return;
+    const w=xwWordMap[xwActiveNum+xwDir];if(!w)return;
+    for(let i=0;i<w.word.length;i++){
+        const wr=w.dir==='H'?w.row:w.row+i,wc=w.dir==='H'?w.col+i:w.col;
+        if(wr===r&&wc===c&&i+1<w.word.length){
+            const nr=w.dir==='H'?w.row:w.row+i+1,nc=w.dir==='H'?w.col+i+1:w.col;
+            xwActiveCell=[nr,nc];xwHighlight();xwGetInput(nr,nc)?.focus();break;
         }
-
-        closeBtn.addEventListener('click', closePanel);
-
-        window.filterNodes = function(category) {
-            if (activeFilter === category) {
-                activeFilter = null;
-            } else {
-                activeFilter = category;
-            }
+    }
+}
+function xwMoveBack(r,c){
+    if(!xwActiveNum)return;
+    const w=xwWordMap[xwActiveNum+xwDir];if(!w)return;
+    for(let i=0;i<w.word.length;i++){
+        const wr=w.dir==='H'?w.row:w.row+i,wc=w.dir==='H'?w.col+i:w.col;
+        if(wr===r&&wc===c&&i>0){
+            const nr=w.dir==='H'?w.row:w.row+i-1,nc=w.dir==='H'?w.col+i-1:w.col;
+            xwActiveCell=[nr,nc];xwHighlight();
+            const inp=xwGetInput(nr,nc);if(inp){inp.value='';inp.focus();}xwUpdateProgress();break;
         }
+    }
+}
+function xwNextWord(rev){
+    const all=XW_WORDS.slice().sort((a,b)=>a.num!==b.num?a.num-b.num:a.dir<b.dir?-1:1);
+    const idx=all.findIndex(w=>w.num===xwActiveNum&&w.dir===xwDir);
+    const nxt=rev?(idx-1+all.length)%all.length:(idx+1)%all.length;
+    const w=all[nxt];xwDir=w.dir;xwActiveNum=w.num;xwActiveCell=[w.row,w.col];
+    xwHighlight();xwGetInput(w.row,w.col)?.focus();
+}
 
-        animate();
+function xwCheck(){
+    let correct=0;
+    XW_WORDS.forEach(w=>{
+        let ok=true;
+        for(let i=0;i<w.word.length;i++){
+            const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
+            const inp=xwGetInput(r,c),td=xwGetCell(r,c);if(!inp)continue;
+            td.classList.remove('correct','wrong');
+            if(inp.value===w.word[i])td.classList.add('correct');
+            else{td.classList.add('wrong');ok=false;}
+        }
+        if(ok)correct++;
+    });
+    xwUpdateProgress(correct);
+}
 
-    </script>
+function xwReveal(){
+    XW_WORDS.forEach(w=>{
+        for(let i=0;i<w.word.length;i++){
+            const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
+            const inp=xwGetInput(r,c);if(inp)inp.value=w.word[i];
+        }
+    });xwUpdateProgress();
+}
+
+function xwClear(){
+    document.querySelectorAll('#xw-grid input').forEach(inp=>inp.value='');
+    document.querySelectorAll('.xw-cell').forEach(td=>td.classList.remove('correct','wrong'));
+    xwUpdateProgress();
+}
+
+function xwUpdateProgress(correctCount){
+    let wc=0;
+    XW_WORDS.forEach(w=>{
+        let ok=true;
+        for(let i=0;i<w.word.length;i++){
+            const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
+            const inp=xwGetInput(r,c);
+            if(!inp||inp.value!==w.word[i]){ok=false;break;}
+        }
+        if(ok)wc++;
+    });
+    if(correctCount!==undefined)wc=correctCount;
+    if(wc===XW_WORDS.length)setTimeout(()=>document.getElementById('xw-congrats').classList.add('show'),400);
+}
+
+window.toggleCrossword=function(){
+    const p=document.getElementById('crossword-panel');
+    const isOpen=p.classList.contains('open');
+    p.classList.toggle('open',!isOpen);
+    document.getElementById('btn-crossword').classList.toggle('active',!isOpen);
+    if(!isOpen){
+        setTimeout(()=>xwSelectWord(5,'A'),50);
+    }
+};
+</script>
 </body>
 </html>
