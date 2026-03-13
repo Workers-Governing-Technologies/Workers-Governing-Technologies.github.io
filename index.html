@@ -1,6 +1,4 @@
-
-Work in Progress 
-
+WORK IN PROGRESS
 
 <!DOCTYPE html>
 <html lang="en">
@@ -164,7 +162,7 @@ Work in Progress
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0.95);
-            width: min(1180px, 96vw);
+            width: min(1200px, 98vw);
             max-height: 92vh;
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -243,7 +241,7 @@ Work in Progress
         }
 
         table#xw-grid { border-collapse:collapse; border:1px solid rgba(255,255,255,0.1); }
-        table#xw-grid td { width:28px; height:28px; position:relative; padding:0; }
+        table#xw-grid td { width:26px; height:26px; position:relative; padding:0; }
 
         .xw-black { background:#020209; }
 
@@ -280,7 +278,7 @@ Work in Progress
             position:absolute; inset:0; width:100%; height:100%;
             border:none; background:transparent;
             text-align:center;
-            font-family:'Courier New',monospace; font-size:12px; font-weight:bold;
+            font-family:'Courier New',monospace; font-size:11px; font-weight:bold;
             color:white; text-transform:uppercase;
             cursor:pointer; caret-color:transparent; outline:none; padding:0; z-index:2;
         }
@@ -291,7 +289,6 @@ Work in Progress
             position:absolute; top:1px; left:2px;
             font-size:7px; color:rgba(255,255,255,0.28);
             line-height:1; z-index:3; pointer-events:none;
-            font-family:'Courier New',monospace;
         }
 
         .xw-clues-col {
@@ -302,7 +299,7 @@ Work in Progress
         .xw-clues-col::-webkit-scrollbar-track{background:transparent;}
         .xw-clues-col::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);}
 
-        .xw-clues-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+        .xw-clues-grid { display:grid; grid-template-columns:1fr; gap:22px; }
 
         .xw-clue-group-title {
             font-size:0.6rem; text-transform:uppercase; letter-spacing:3px;
@@ -350,34 +347,13 @@ Work in Progress
             animation:fadeUp 0.5s ease;
         }
         #xw-congrats p { font-size:0.72rem; letter-spacing:2px; color:rgba(255,255,255,0.45); }
-        @keyframes fadeUp {
-            from{transform:translateY(18px);opacity:0;}
-            to{transform:translateY(0);opacity:1;}
-        }
-
-        .legend {
-            display:flex; flex-wrap:wrap; gap:8px;
-            pointer-events:auto; transition:opacity 0.5s;
-        }
-        .legend-item {
-            display:flex; align-items:center; gap:6px;
-            font-size:0.7rem; cursor:pointer;
-            padding:4px 8px;
-            background:rgba(255,255,255,0.05);
-            border:1px solid transparent; border-radius:4px;
-            transition:all 0.2s;
-        }
-        .legend-item:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.25);}
-        .dot{width:6px;height:6px;border-radius:50%;}
 
         @media(max-width:780px){
             .xw-body{flex-direction:column;}
             .xw-grid-col{border-right:none;border-bottom:1px solid var(--border-color);}
-            .xw-clues-grid{grid-template-columns:1fr;}
             #crossword-panel{top:0;left:0;transform:none;width:100vw;max-height:100vh;}
             #crossword-panel.open{transform:none;}
-            .legend{display:none;}
-            h1{font-size:1.4rem;}
+            h1{font-size:1.2rem;}
         }
     </style>
 </head>
@@ -610,16 +586,13 @@ function calculateSloganTargets(){
     let id;
     try {
         id = tCtx.getImageData(0,0,safeWidth,safeHeight).data;
-    } catch(e) {
-        console.error("Slogan target calculation failed:", e);
-        return;
-    }
+    } catch(e) { return; }
     let vp=[],ep=[],step=4;
     for(let y=1;y<safeHeight-1;y+=step){
         for(let x=1;x<safeWidth-1;x+=step){
             const idx=(y*safeWidth+x)*4;
             if(id[idx]>100){
-                const l=id[idx-4],r=id[idx+4],u=id[((y-1)*safeWidth+x)*4],d=id[((y+1)*safeWidth+x)*4];
+                const l=id[idx-4],r=id[idx+4],u=id[((y-1)*width+x)*4],d=id[((y+1)*width+x)*4];
                 (l<100||r<100||u<100||d<100)?ep.push({x,y}):vp.push({x,y});
             }
         }
@@ -656,15 +629,9 @@ function resize(){
     width=canvas.width=Math.floor(window.innerWidth);
     height=canvas.height=Math.floor(window.innerHeight);
     if(nodes.length===0 && width > 0 && height > 0) initData();
-    if(currentMode==='slogan' && width > 0 && height > 0) calculateSloganTargets();
 }
 window.addEventListener('resize',resize);
 resize();
-
-function hexToRgb(h){
-    var r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
-    return r?`${parseInt(r[1],16)}, ${parseInt(r[2],16)}, ${parseInt(r[3],16)}`:'255,255,255';
-}
 
 function animate(){
     requestAnimationFrame(animate);
@@ -678,15 +645,11 @@ function animate(){
         if(currentMode==='constellation'){
             for(let j=i+1;j<nodes.length;j++){
                 let p2=nodes[j];
-                if(Math.abs(i-j)>50&&p1.category===p2.category)continue;
                 if(p1.category===p2.category){
                     let dx=p2.x-p1.x,dy=p2.y-p1.y,dist=Math.sqrt(dx*dx+dy*dy);
                     if(dist<connectionsDistance){
-                        let op=1-(dist/connectionsDistance);
-                        ctx.strokeStyle=`rgba(${hexToRgb(p1.color)},${op*0.3})`;
+                        ctx.strokeStyle=`rgba(255,255,255,${(1-dist/connectionsDistance)*0.2})`;
                         ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
-                        const disp=dist-equilibriumDistance,fx=(dx/dist)*disp*0.00005,fy=(dy/dist)*disp*0.00005;
-                        p1.vx+=fx;p1.vy+=fy;p2.vx-=fx;p2.vy-=fy;
                     }
                 }
             }
@@ -701,121 +664,70 @@ function animate(){
                 const dx=p1.targetX-p1.x,dy=p1.targetY-p1.y,dist=Math.sqrt(dx*dx+dy*dy);
                 if(dist<1){p1.x=p1.targetX;p1.y=p1.targetY;p1.locked=true;}
                 else{p1.vx=dx*0.05;p1.vy=dy*0.05;p1.vx*=0.9;p1.vy*=0.9;}
-            } else {p1.x=p1.targetX;p1.y=p1.targetY;p1.vx=0;p1.vy=0;}
+            }
         }
         if(!p1.locked){p1.x+=p1.vx;p1.y+=p1.vy;}
-        if(currentMode==='constellation'){
-            if(p1.x<0||p1.x>width)p1.vx*=-1;
-            if(p1.y<0||p1.y>height)p1.vy*=-1;
-        }
-        let isDimmed=currentMode==='constellation'&&activeFilter&&p1.category!==activeFilter;
         ctx.beginPath();
-        ctx.arc(p1.x,p1.y,isDimmed?1:p1.radius,0,Math.PI*2);
-        if(p1.hovered||p1===selectedNode){ctx.shadowBlur=15;ctx.shadowColor=p1.color;ctx.fillStyle='#ffffff';}
-        else{ctx.shadowBlur=0;ctx.fillStyle=isDimmed?'#333':p1.color;}
-        ctx.fill();ctx.shadowBlur=0;
-        if(currentMode==='constellation'&&p1.isSlogan&&!isDimmed){
-            ctx.font='bold 11px Courier New';ctx.fillStyle=p1.color;ctx.textAlign='center';
-            ctx.fillText(p1.text,p1.x,p1.y-14);
-        }
+        ctx.arc(p1.x,p1.y,p1.radius,0,Math.PI*2);
+        ctx.fillStyle=p1.color;
+        ctx.fill();
     }
 }
 
 canvas.addEventListener('mousemove',(e)=>{
     if(document.getElementById('crossword-panel').classList.contains('open'))return;
     mouse.x=e.clientX;mouse.y=e.clientY;
-    let hovering=false;
-    const tooltip=document.getElementById('tooltip');
-    for(let i=nodes.length-1;i>=0;i--){
-        let node=nodes[i];
-        let dx=mouse.x-node.x,dy=mouse.y-node.y;
-        if(Math.abs(dx)>20||Math.abs(dy)>20){node.hovered=false;continue;}
-        let dist=Math.sqrt(dx*dx+dy*dy);
-        const hitDist=node.isSlogan?30:15;
-        if(dist<hitDist){
-            node.hovered=true;hovering=true;
-            if(!node.isSlogan&&currentMode==='constellation'){
-                tooltip.style.display='block';
-                tooltip.style.left=(e.clientX+15)+'px';tooltip.style.top=(e.clientY+15)+'px';
-                tooltip.innerText=themes[node.category].label;
-                tooltip.style.borderColor=node.color;
-            }
-            break;
-        } else {node.hovered=false;}
-    }
-    if(!hovering)tooltip.style.display='none';
-    canvas.style.cursor=hovering?'pointer':'default';
 });
-canvas.addEventListener('mouseleave',()=>{mouse.x=null;mouse.y=null;});
-
 canvas.addEventListener('click',(e)=>{
     if(document.getElementById('crossword-panel').classList.contains('open'))return;
     for(let i=nodes.length-1;i>=0;i--){
         let node=nodes[i];
         let dx=e.clientX-node.x,dy=e.clientY-node.y,dist=Math.sqrt(dx*dx+dy*dy);
-        const hitDist=node.isSlogan?30:15;
-        if(dist<hitDist){selectedNode=node;displayThought(node);return;}
+        if(dist<20){selectedNode=node;displayThought(node);return;}
     }
 });
 
-const panel=document.getElementById('loudspeaker-panel');
-const thoughtDisplay=document.getElementById('thought-display');
-const categoryDisplay=document.getElementById('thought-category');
-document.getElementById('close-panel-btn').addEventListener('click',()=>{
-    panel.classList.add('hidden');selectedNode=null;
-});
-
 function displayThought(node){
-    panel.classList.remove('hidden');
-    categoryDisplay.innerText=themes[node.category].label;
-    categoryDisplay.style.color=node.color;
-    thoughtDisplay.style.opacity=0;
-    setTimeout(()=>{
-        thoughtDisplay.innerHTML=`"${node.text}"`;
-        thoughtDisplay.style.opacity=1;
-        thoughtDisplay.style.transition="opacity(0.3s)";
-    },100);
-    panel.style.boxShadow=`0 0 30px ${node.color}40`;
-    panel.style.borderColor=node.color;
+    const p=document.getElementById('loudspeaker-panel');
+    p.classList.remove('hidden');
+    document.getElementById('thought-category').innerText=themes[node.category].label;
+    document.getElementById('thought-category').style.color=node.color;
+    document.getElementById('thought-display').innerText=`"${node.text}"`;
 }
+document.getElementById('close-panel-btn').addEventListener('click',()=>document.getElementById('loudspeaker-panel').classList.add('hidden'));
 
-window.filterNodes=function(category){
-    activeFilter=(activeFilter===category)?null:category;
-};
-
-// Start animation only after first resize
-window.onload = function() {
-    resize();
-    animate();
-}
-
+window.onload=()=>{resize();animate();};
 
 // ══════════════════════════════════════════════════════
-//  CROSSWORD ENGINE
+//  RECONFIGURED CROSSWORD ENGINE
 // ══════════════════════════════════════════════════════
 
 const XW_WORDS = [
-   {word:"INTERCOOPERATION",row:15,col:7, dir:"H",num:14,theme:"economy"},
-   {word:"CREATIVECOMMONS", row:6, col:14,dir:"V",num:6, theme:"data"},
-   {word:"PARTICIPATORY",   row:9, col:13,dir:"H",num:10,theme:"democracy"},
-   {word:"DIGITALSOLIDARITYECONOMIES", row:11,col:5, dir:"H",num:12,theme:"economy"},
-   {word:"INTELLECTUALPROPERTY", row:20,col:9, dir:"H",num:15,theme:"creativity"},
-   {word:"ARTEESETICA",     row:18,col:17,dir:"V",num:16,theme:"environment"},
-   {word:"DATACENTERS",     row:2, col:22,dir:"V",num:1, theme:"environment"},
-   {word:"COOPCYCLE",       row:6, col:8, dir:"H",num:5, theme:"economy"},
-   {word:"COOPYLEFT",       row:14,col:21,dir:"V",num:13,theme:"rights"},
-   {word:"UNIONIZED",       row:8, col:21,dir:"H",num:9, theme:"democracy"},
-   {word:"WHATSAPP",        row:4, col:5, dir:"V",num:2, theme:"democracy"},
-   {word:"SUBVERT",         row:10,col:6, dir:"V",num:11,theme:"economy"},
-   {word:"GAMING",          row:5, col:26,dir:"V",num:4, theme:"democracy"},
-   {word:"WRITER",          row:7, col:13,dir:"H",num:7, theme:"creativity"},
-   {word:"PROFIT",          row:4, col:9, dir:"V",num:3, theme:"economy"},
-   {word:"MESH",            row:7, col:28,dir:"V",num:8, theme:"economy"},
+    // Spine
+    {word:"DIGITALSOLIDARITYECONOMIES", row:10, col:1, dir:"H", num:12, theme:"economy"},
+    // Intersections with Spine
+    {word:"CREATIVECOMMONS", row:6, col:5, dir:"V", num:6, theme:"data"}, // (10,5) 'T'
+    {word:"PROFIT", row:8, col:10, dir:"V", num:3, theme:"economy"}, // (10,10) 'O'
+    {word:"DATACENTERS", row:4, col:18, dir:"V", num:1, theme:"environment"}, // (10,18) 'E'
+    {word:"GAMING", row:7, col:24, dir:"V", num:4, theme:"democracy"}, // (10,24) 'I'
+    // Intersection between COOPCYCLE and PROFIT
+    {word:"COOPCYCLE", row:8, col:7, dir:"H", num:5, theme:"economy"}, // (8,10) 'P'
+    // Independent/Safe Words
+    {word:"WRITER", row:2, col:5, dir:"H", num:7, theme:"creativity"},
+    {word:"UNIONIZED", row:4, col:10, dir:"H", num:9, theme:"democracy"},
+    {word:"PARTICIPATORY", row:15, col:12, dir:"H", num:10, theme:"democracy"},
+    {word:"INTERCOOPERATION", row:22, col:1, dir:"H", num:14, theme:"economy"},
+    {word:"INTELLECTUALPROPERTY", row:21, col:10, dir:"H", num:15, theme:"creativity"},
+    {word:"WHATSAPP", row:2, col:2, dir:"V", num:2, theme:"democracy"},
+    {word:"SUBVERT", row:12, col:3, dir:"V", num:11, theme:"economy"},
+    {word:"MESH", row:2, col:28, dir:"V", num:8, theme:"economy"},
+    {word:"COOPYLEFT", row:12, col:26, dir:"V", num:13, theme:"rights"},
+    {word:"ARTEESETICA", row:18, col:24, dir:"V", num:16, theme:"environment"},
 ];
 
 const XW_CLUES = {
    across:{
-       5: " A federation of bike logistics messengers in Europe that aims to reduce carbon emissions in urban logistics transport. It has developed a platform that supports worker-owned bike delivery cooperatives",
+       5: " federation of bike logistics messengers in Europe that aims to reduce carbon emissions in urban logistics transport. It has developed a platform that supports worker-owned bike delivery cooperatives",
        7: "The 2023 Hollywood writers’ Memorandum of Agreement states that generative AI cannot be recognised as a  ___",
        9: "Seize the Means Video Co-op, based in Vancouver, is an example of a ____ worker Cooperative. Apart from ensuring worker ownership, they also have collective agreements as an additional layer of protection and checks and balances for worker-members.",
        10:"Workers Inquiry as a Research Methodology (WIRM) emphasizes a ___, worker-led approach that centers workers’ knowledge, fosters self-expression, and strengthens organizing capacity",
@@ -888,7 +800,7 @@ function buildClueList(dir,containerId,clueObj){
         const w=XW_WORDS.find(x=>x.num===num&&x.dir===(dir==='A'?'H':'V'));
         const div=document.createElement('div');
         div.className='clue-item'+(w?' tc-'+w.theme:'');
-        div.id='xwclue-'+num+dir;div.dataset.num=num;div.dataset.dir=dir;
+        div.id='xwclue-'+num+dir;
         div.innerHTML=`<span class="clue-num">${num}</span><span>${clueObj[num]}</span>`;
         div.addEventListener('click',()=>xwSelectWord(num,dir));
         cont.appendChild(div);
@@ -902,24 +814,17 @@ let xwActiveCell=null,xwDir='H',xwActiveNum=null;
 function xwGetCell(r,c){return document.querySelector(`#crossword-panel td[data-r="${r}"][data-c="${c}"]`);}
 function xwGetInput(r,c){return document.querySelector(`#crossword-panel input[data-r="${r}"][data-c="${c}"]`);}
 
-function xwCurrentTheme(){
-    if(!xwActiveNum)return'';
-    const w=xwWordMap[xwActiveNum+xwDir];return w?w.theme:'';
-}
-
 function xwSelectCell(r,c){
     const k=r+','+c;if(!xwCells[k])return;
     const refs=xwCells[k].wordRefs;
     if(xwActiveCell&&xwActiveCell[0]===r&&xwActiveCell[1]===c){
-        const dirs=refs.map(x=>x.dir);
-        if(dirs.includes('H')&&dirs.includes('V'))xwDir=xwDir==='H'?'V':'H';
+        if(refs.length>1)xwDir=xwDir==='H'?'V':'H';
     } else {
-        const dirs=refs.map(x=>x.dir);
-        if(!dirs.includes(xwDir))xwDir=dirs[0];
+        xwDir=refs[0].dir;
     }
     xwActiveCell=[r,c];
-    const ref=refs.find(x=>x.dir===xwDir);
-    xwActiveNum=ref?ref.num:null;
+    const ref=refs.find(x=>x.dir===xwDir)||refs[0];
+    xwActiveNum=ref.num;xwDir=ref.dir;
     xwHighlight();xwGetInput(r,c)?.focus();
 }
 
@@ -931,144 +836,94 @@ function xwSelectWord(num,dir){
 }
 
 function xwHighlight(){
-    document.querySelectorAll('#crossword-panel .xw-cell').forEach(td=>{
+    document.querySelectorAll('.xw-cell').forEach(td=>{
         td.classList.remove('active','in-word');
         Object.keys(themes).forEach(t=>td.classList.remove('tc-'+t));
     });
     document.querySelectorAll('.clue-item').forEach(el=>el.classList.remove('active'));
     if(!xwActiveCell)return;
-    const th=xwCurrentTheme();
-    if(xwActiveNum){
-        const w=xwWordMap[xwActiveNum+xwDir];
-        if(w){
-            for(let i=0;i<w.word.length;i++){
-                const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
-                const td=xwGetCell(r,c);
-                if(td){td.classList.add('in-word');if(th)td.classList.add('tc-'+th);}
-            }
-            const cd=xwDir==='H'?'A':'D';
-            const ce=document.getElementById('xwclue-'+xwActiveNum+cd);
-            if(ce){ce.classList.add('active');ce.scrollIntoView({block:'nearest',behavior:'smooth'});}
+    const w=xwWordMap[xwActiveNum+xwDir];
+    if(w){
+        for(let i=0;i<w.word.length;i++){
+            const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
+            const td=xwGetCell(r,c);
+            if(td){td.classList.add('in-word');td.classList.add('tc-'+w.theme);}
         }
+        const ce=document.getElementById('xwclue-'+xwActiveNum+(xwDir==='H'?'A':'D'));
+        if(ce){ce.classList.add('active');ce.scrollIntoView({block:'nearest'});}
     }
-    const atd=xwGetCell(xwActiveCell[0],xwActiveCell[1]);
-    if(atd){atd.classList.add('active');if(th)atd.classList.add('tc-'+th);}
+    xwGetCell(xwActiveCell[0],xwActiveCell[1])?.classList.add('active');
 }
 
 function xwInput(e,r,c){
     const inp=e.target;
-    const v=inp.value.toUpperCase().replace(/[^A-Z]/g,'');
-    inp.value=v?v[v.length-1]:'';
-    if(inp.value)xwMoveForward(r,c);
-    xwUpdateProgress();
+    inp.value=inp.value.toUpperCase().replace(/[^A-Z]/g,'');
+    if(inp.value)xwMove(1);
+    xwCheckWin();
 }
 
 function xwKey(e,r,c){
     if(e.key==='Backspace'){
-        const inp=xwGetInput(r,c);
-        if(inp&&inp.value){inp.value='';xwUpdateProgress();}
-        else xwMoveBack(r,c);
+        if(!xwGetInput(r,c).value)xwMove(-1);
+        xwGetInput(xwActiveCell[0],xwActiveCell[1]).value='';
         e.preventDefault();
-    } else if(e.key==='ArrowRight'){xwMoveDir(r,c,0,1);e.preventDefault();}
-    else if(e.key==='ArrowLeft'){xwMoveDir(r,c,0,-1);e.preventDefault();}
-    else if(e.key==='ArrowDown'){xwMoveDir(r,c,1,0);e.preventDefault();}
-    else if(e.key==='ArrowUp'){xwMoveDir(r,c,-1,0);e.preventDefault();}
-    else if(e.key==='Tab'){e.preventDefault();xwNextWord(e.shiftKey);}
+    }
 }
 
-function xwMoveDir(r,c,dr,dc){
-    const nr=r+dr,nc=c+dc;
-    if(xwCells[nr+','+nc]){
-        if(dr!==0&&dc===0)xwDir='V';
-        if(dr===0&&dc!==0)xwDir='H';
-        xwSelectCell(nr,nc);
+function xwMove(step){
+    const w=xwWordMap[xwActiveNum+xwDir];
+    const idx=w.dir==='H'?xwActiveCell[1]-w.col:xwActiveCell[0]-w.row;
+    const next=idx+step;
+    if(next>=0&&next<w.word.length){
+        const nr=w.dir==='H'?w.row:w.row+next,nc=w.dir==='H'?w.col+next:w.col;
+        xwActiveCell=[nr,nc];xwHighlight();xwGetInput(nr,nc).focus();
     }
-}
-function xwMoveForward(r,c){
-    if(!xwActiveNum)return;
-    const w=xwWordMap[xwActiveNum+xwDir];if(!w)return;
-    for(let i=0;i<w.word.length;i++){
-        const wr=w.dir==='H'?w.row:w.row+i,wc=w.dir==='H'?w.col+i:w.col;
-        if(wr===r&&wc===c&&i+1<w.word.length){
-            const nr=w.dir==='H'?w.row:w.row+i+1,nc=w.dir==='H'?w.col+i+1:w.col;
-            xwActiveCell=[nr,nc];xwHighlight();xwGetInput(nr,nc)?.focus();break;
-        }
-    }
-}
-function xwMoveBack(r,c){
-    if(!xwActiveNum)return;
-    const w=xwWordMap[xwActiveNum+xwDir];if(!w)return;
-    for(let i=0;i<w.word.length;i++){
-        const wr=w.dir==='H'?w.row:w.row+i,wc=w.dir==='H'?w.col+i:w.col;
-        if(wr===r&&wc===c&&i>0){
-            const nr=w.dir==='H'?w.row:w.row+i-1,nc=w.dir==='H'?w.col+i-1:w.col;
-            xwActiveCell=[nr,nc];xwHighlight();
-            const inp=xwGetInput(nr,nc);if(inp){inp.value='';inp.focus();}xwUpdateProgress();break;
-        }
-    }
-}
-function xwNextWord(rev){
-    const all=XW_WORDS.slice().sort((a,b)=>a.num!==b.num?a.num-b.num:a.dir<b.dir?-1:1);
-    const idx=all.findIndex(w=>w.num===xwActiveNum&&w.dir===xwDir);
-    const nxt=rev?(idx-1+all.length)%all.length:(idx+1)%all.length;
-    const w=all[nxt];xwDir=w.dir;xwActiveNum=w.num;xwActiveCell=[w.row,w.col];
-    xwHighlight();xwGetInput(w.row,w.col)?.focus();
 }
 
 function xwCheck(){
-    let correct=0;
     XW_WORDS.forEach(w=>{
-        let ok=true;
         for(let i=0;i<w.word.length;i++){
             const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
-            const inp=xwGetInput(r,c),td=xwGetCell(r,c);if(!inp)continue;
+            const inp=xwGetInput(r,c);if(!inp)continue;
+            const td=xwGetCell(r,c);
             td.classList.remove('correct','wrong');
-            if(inp.value===w.word[i])td.classList.add('correct');
-            else{td.classList.add('wrong');ok=false;}
+            if(inp.value){
+                if(inp.value===w.word[i])td.classList.add('correct');
+                else td.classList.add('wrong');
+            }
         }
-        if(ok)correct++;
     });
-    xwUpdateProgress(correct);
 }
 
 function xwReveal(){
     XW_WORDS.forEach(w=>{
         for(let i=0;i<w.word.length;i++){
             const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
-            const inp=xwGetInput(r,c);if(inp)inp.value=w.word[i];
+            xwGetInput(r,c).value=w.word[i];
         }
-    });xwUpdateProgress();
+    });
 }
 
 function xwClear(){
-    document.querySelectorAll('#xw-grid input').forEach(inp=>inp.value='');
+    document.querySelectorAll('#xw-grid input').forEach(i=>i.value='');
     document.querySelectorAll('.xw-cell').forEach(td=>td.classList.remove('correct','wrong'));
-    xwUpdateProgress();
 }
 
-function xwUpdateProgress(correctCount){
-    let wc=0;
+function xwCheckWin(){
+    let allOk=true;
     XW_WORDS.forEach(w=>{
-        let ok=true;
         for(let i=0;i<w.word.length;i++){
             const r=w.dir==='H'?w.row:w.row+i,c=w.dir==='H'?w.col+i:w.col;
-            const inp=xwGetInput(r,c);
-            if(!inp||inp.value!==w.word[i]){ok=false;break;}
+            if(xwGetInput(r,c).value!==w.word[i])allOk=false;
         }
-        if(ok)wc++;
     });
-    if(correctCount!==undefined)wc=correctCount;
-    if(wc===XW_WORDS.length)setTimeout(()=>document.getElementById('xw-congrats').classList.add('show'),400);
+    if(allOk)document.getElementById('xw-congrats').classList.add('show');
 }
 
-window.toggleCrossword=function(){
+window.toggleCrossword=()=>{
     const p=document.getElementById('crossword-panel');
-    const isOpen=p.classList.contains('open');
-    p.classList.toggle('open',!isOpen);
-    document.getElementById('btn-crossword').classList.toggle('active',!isOpen);
-    if(!isOpen){
-        setTimeout(()=>xwSelectWord(5,'A'),50);
-    }
+    p.classList.toggle('open');
+    if(p.classList.contains('open'))setTimeout(()=>xwSelectWord(12,'A'),100);
 };
 </script>
 </body>
