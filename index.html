@@ -351,7 +351,7 @@
             .xw-grid-col{border-right:none;border-bottom:1px solid var(--border-color);}
             #crossword-panel{top:0;left:0;transform:none;width:100vw;max-height:100vh;}
             #crossword-panel.open{transform:none;}
-            h1{font-size:1.2rem;}
+            h1{font-size:1.4rem;}
         }
     </style>
 </head>
@@ -456,79 +456,99 @@ const themes = {
 };
 
 function cleanText(t){
-    return t.replace(/some of us\s*lcome/gi,"welcome")
-            .replace(/some of us\s*r/gi,"power")
-            .replace(/betsome of us\s*en/gi,"between")
-            .replace(/some of us\s*llbeing/gi,"wellbeing")
-            .replace(/outsome of us\s*ighs/gi,"outweighs")
-            .replace(/some of us/gi,"We");
+    // Removed the "some of us" -> "We" replacer to respect the manifesto's plurality
+    return t.trim();
 }
 
 const rawData=[
-    {t:"creativity",text:"A writer can only be identified as a human being. Technology is a tool, never the creator."},
-    {t:"creativity",text:"AI must never be pushed on a worker. It is our choice to use it."},
-    {t:"economy",text:"We reject the narrative that AI is 'inevitable.' Profits for the few do not justify the exploitation of the many."},
-    {t:"rights",text:"We reject the 'inevitability' of technology that depends on the theft of our labour."},
-    {t:"rights",text:"We demand compensation and consent for the use of our archives."},
-    {t:"policy",text:"Government deregulation should not be a tool for corporations to bypass union contracts."},
-    {t:"policy",text:"We welcome solidarity and expertise to strengthen our in-house policy capacity."},
-    {t:"environment",text:"Majority world cannot be the 'sacrificial zones' for Data centre expansions."},
-    {t:"environment",text:"Innovation cannot run on the environmental ruin of our small towns."},
-    {t:"environment",text:"The right of our community to access drinking water outweighs the right of a tech company to train a dataset."},
-    {t:"data",text:"We demand the immediate enforcement of data protection and IP laws."},
-    {t:"rights",text:"Artists, academics, environmentalists, and all citizens stand united against corporate encroachment."},
-    {t:"creativity",text:"We refuse to let our active creativity be reduced to data points used against us."},
-    {t:"data",text:"Transparency in worker data: what is collected, why, and how it is used."},
-    {t:"democracy",text:"Fair profits through transparent productivity metrics."},
-    {t:"rights",text:"Workers must have the right to refuse tasks assigned by an algorithm without fear of sanction."},
-    {t:"democracy",text:"We demand the right to see and negotiate the metrics used to estimate worker productivity."},
-    {t:"democracy",text:"Stopping automated punishments on workers; human review is mandatory."},
-    {t:"democracy",text:"Establish joint committees on health, safety and technology."},
-    {t:"data",text:"Data sovereignty: core digital infrastructures must be managed as public goods."},
-    {t:"rights",text:"We will call out corporations that use AI as a convenient excuse for job cuts."},
-    {t:"democracy",text:"We resolve to build our own technical resources to strengthen union organization."},
-    {t:"equity",text:"We reject the divide between 'high-skill' workers and 'low-skill' workers."},
-    {t:"rights",text:"Mergers must sign neutrality agreements that prevent interference with our right to organize."},
-    {t:"democracy",text:"Checklists to monitor every workplace for unreported software deployments."},
-    {t:"democracy",text:"We demand a notice period for any technological change in our workplace."},
-    {t:"economy",text:"We promote open-source software (like CoopCycle) that belongs to the workers."},
-    {t:"equity",text:"We commit to anti-harassment protocols and promoting leadership roles for women and gender-diverse individuals."},
-    {t:"economy",text:"Building worker-owned platform cooperatives to replace big tech."},
-    {t:"economy",text:"We strive to build a fully alternative economy with our own credit unions and social safety nets."},
-    {t:"democracy",text:"We use the union as a vital resource for conflict resolution."},
-    {t:"creativity",text:"We demand an economy that provides artists with the mental space to be creative."},
-    {t:"rights",text:"We declare internet access a fundamental human right."},
-    {t:"policy",text:"We prioritize secure, internal applications to protect social movements from surveillance."},
-    {t:"economy",text:"We reject the predatory nature of gig apps; gig workers are workers, not contractors."},
-    {t:"economy",text:"When private owners abandon companies, workers have a right to the technical support to reclaim them."},
-    {t:"data",text:"We reject 'one-size-fits-all' software models. We champion tools that reflect plural realities."},
-    {t:"data",text:"Translation of academic research into practical technical assistance for the worker on the shop floor."},
-    {t:"economy",text:"We reject the 'rent extraction' model where outside investors skim value from creators."},
-    {t:"data",text:"Data systems must preserve the right to be forgotten and the right to be credited."},
-    {t:"equity",text:"We acknowledge the systemic exclusion of trans people from formal education."},
-    {t:"equity",text:"We assert that people performing data labeling are the primary experts on AI harms."},
-    {t:"data",text:"We move beyond being 'documented' by academics to identifying our own issues (worker inquiry)."},
-    {t:"democracy",text:"Inter-cooperation to create safe environments for junior members to learn."},
-    {t:"creativity",text:"We 'dare to desire' new forms of technology that prioritize human joy and rest."},
-    {t:"data",text:"We reject proprietary licensing and embrace Creative Commons."},
-    {t:"policy",text:"We use collective knowledge to influence legislators for public policies that protect the solidarity economy."},
-    {t:"policy",text:"The state must investigate the 'black box' of platform algorithms."},
-    {t:"policy",text:"Demand that platform policies be written in the native language of the workers."}
+    {t:"creativity", text:`We "dare to desire" new forms of technology that prioritize human joy, rest, and social impact over profit.`},
+    {t:"creativity", text:`We demand an economy that provides artists with the mental space to be creative, recognizing that rest and security are prerequisites for authentic culture-making.`},
+    {t:"creativity", text:`We refuse to let our active creativity be reduced to data points used against us, without our consent, benefit, or enjoyment.`},
+    {t:"creativity", text:`A writer can only be identified as a human being. Technology may be a tool, but it is never the creator.`},
+    
+    {t:"rights", text:`Artists, academics, environmentalists, and all citizens stand united against corporate encroachment.`},
+    {t:"rights", text:`We call out corporations that use AI as a convenient excuse for job cuts.`},
+    {t:"rights", text:`We demand compensation and consent for the use of our archives. Our past and ongoing work in the creative industry is our intellectual property.`},
+    {t:"rights", text:`Workers must have the right to refuse tasks assigned by an algorithm without fear of sanction (and limit off-hours work demands).`},
+    {t:"rights", text:`We declare internet access a fundamental human right.`},
+    {t:"rights", text:`some of us prioritize the use of secure, internal applications to organize collective work and protect social movements from state surveillance and corporate coercion.`},
+    
+    {t:"economy", text:`We reject the narrative that AI is "inevitable." Profits for the few do not justify the exploitation of the many.`},
+    {t:"economy", text:`We reject the "rent extraction" model where outside investors skim value from creators.`},
+    {t:"economy", text:`some of us reject the predatory nature of traditional gig apps and recognise gig workers not as independent contractors, but as workers.`},
+    {t:"economy", text:`Build foundations for a different economy that operates on decent work, internal democracy, and data ownership.`},
+    {t:"economy", text:`Strive to build a fully alternative economy where artists and workers have their own credit unions and social safety nets, independent of traditional exploitative capital.`},
+    {t:"economy", text:`We build our own autonomous networks of cooperatives and social entities.`},
+    {t:"economy", text:`Building worker-owned platform cooperatives to replace big tech. some of us are against tech giants.`},
+    {t:"economy", text:`some of us promote open-source software (like CoopCycle) that belongs to the workers.`},
+    {t:"economy", text:`When private owners abandon companies, the workers have a right to the technical support needed to reclaim and run those enterprises themselves.`},
+    
+    {t:"environment", text:`We reject the "inevitability" of technology that depends on the theft of our labour and the depletion of natural resources.`},
+    {t:"environment", text:`Promote territorial scalability, prioritizing local community development.`},
+    {t:"environment", text:`Majority world cannot be the "sacrificial zones" for the Data centre expansions for the profit making of Silicon Valley tech bros.`},
+    {t:"environment", text:`Innovation cannot run on the environmental ruin of our small towns.`},
+    {t:"environment", text:`Assert that the right of our community to access drinking water outweighs the right of a tech company to train a dataset.`},
+    
+    {t:"data", text:`Transparency in worker data: what is collected, why, and how it is used.`},
+    {t:"data", text:`We demand that data systems preserve the right to be forgotten and the right to be credited.`},
+    {t:"data", text:`We partner with national statistics agencies to create official, reliable metrics on platform labor.`},
+    {t:"data", text:`We advocate for data sovereignty and for the core digital infrastructures of our society to be managed as public goods, not private monopolies.`},
+    {t:"data", text:`some of us reject "one-size-fits-all" software models built for global corporations. some of us champion tools that reflect the plural realities of the people.`},
+    {t:"data", text:`Encourage academic-practitioner alliance and solidarity.`},
+    {t:"data", text:`Bridge the gap between public universities and worker cooperatives.`},
+    {t:"data", text:`Support translation of academic research into practical technical assistance, ensuring that the best insights from universities are directly available to the worker on the shop floor.`},
+    {t:"data", text:`Reject proprietary licensing in research dissemination and embrace Creative Commons and Open Source licenses to ensure knowledge is not locked away by capital.`},
+    {t:"data", text:`Promote research for strengthening our capacity to organize.`},
+    {t:"data", text:`Assert that the people performing the data labeling, content moderation, and task-based labor are the primary experts on AI harms.`},
+    {t:"data", text:`Move beyond being "documented" by academics. some of us identify our own issues, formulate our own questions, and choose the formats (worker inquiry).`},
+    
+    {t:"democracy", text:`Demand the right to see and negotiate the metrics used to estimate worker productivity.`},
+    {t:"democracy", text:`Fair profits through transparent productivity metrics.`},
+    {t:"democracy", text:`Stopping automated punishments on workers; human review and accountability are mandatory.`},
+    {t:"democracy", text:`AI must never be pushed on a worker. It is our choice to use it and to be informed of its presence in advance.`},
+    {t:"democracy", text:`We resolve to build our own technical resources to strengthen union organization.`},
+    {t:"democracy", text:`If any company wants to merge or acquire, they must sign neutrality agreements that prevent them from interfering with our right to organize.`},
+    {t:"democracy", text:`some of us recognize that even in a worker-owned co-op, dynamics exist. some of us use the union as a vital resource for conflict resolution.`},
+    {t:"democracy", text:`Establish joint committees on health, health safety and technology.`},
+    {t:"democracy", text:`Transparency: Every funding round and policy change is conducted in the open, with the community involved in the process.`},
+    {t:"democracy", text:`Avoid sacrificing core values or diluting the governance influence of our members.`},
+    {t:"democracy", text:`some of us call for checklists to monitor every workplace for unreported software deployments and technological changes.`},
+    {t:"democracy", text:`some of us demand a notice period for any technological change in our workplace.`},
+    
+    {t:"policy", text:`Use our collective knowledge and mobilisation to influence legislators and law makers, demanding public policies that fund and protect the digital solidarity economy.`},
+    {t:"policy", text:`Demand the immediate enforcement of existing data protection and intellectual property laws, alongside new public guardrails against AI threats.`},
+    {t:"policy", text:`State to investigate the "black box" of platform algorithms.`},
+    {t:"policy", text:`Demand that platform policies be written in the native language of the workers. Reject "Terms of Service" written in English or Spanish to obfuscate the rights of workers.`},
+    {t:"policy", text:`Government deregulation should not be a tool for corporations to bypass union contracts.`},
+    {t:"policy", text:`We reject and refuse any policy discussion that does not center the lived experience of the supply chain.`},
+    
+    {t:"equity", text:`some of us approach our work as workers, not entrepreneurs.`},
+    {t:"equity", text:`Inter-cooperation to create safe environments where junior members and trainees can learn technical and cooperative skills without bearing the full risk of failure.`},
+    {t:"equity", text:`Commit to rebuilding faith in collective projects, unions, coops, and social movements.`},
+    {t:"equity", text:`Welcome solidarity and expertise, to strengthen our in-house policy capacity, cultural funding knowledge, and collective wellbeing.`},
+    {t:"equity", text:`Reject the divide between "high-skill" workers and "low-skill" workers.`},
+    {t:"equity", text:`Commit to anti-harassment protocols and to promoting leadership roles for women and gender-diverse individuals.`},
+    {t:"equity", text:`Ensure women-led projects have equal visibility and resources.`},
+    {t:"equity", text:`Acknowledge the systemic exclusion of trans people from formal education, and evaluate our cooperatives as a site of ongoing training.`},
+    {t:"equity", text:`We prioritize the quality of our lives as workers.`}
 ];
 
 const slogans=[
-    {t:"creativity",text:"WE ARE NOT DATA POINTS"},
-    {t:"rights",text:"THE RIGHT TO REFUSE"},
+    {t:"creativity",text:"REFUSE HARMFUL TECH"},
+    {t:"economy",text:"RENEW COLLECTIVE PRACTICES"},
+    {t:"rights",text:"REJOICE IN SHARED FUTURES"},
+    {t:"democracy",text:"DOING IT TOGETHER"},
+    {t:"creativity",text:"REST IS OUR RIGHT"},
     {t:"environment",text:"WATER > DATA CENTERS"},
-    {t:"democracy",text:"NO ALGORITHMIC MANAGERS, WHERE ARE THE HUMANS?"},
+    {t:"democracy",text:"NO ALGORITHMIC MANAGERS"},
     {t:"data",text:"DATA SOVEREIGNTY"},
     {t:"economy",text:"WORKER-OWNED TECHNOLOGIES"},
     {t:"policy",text:"OPEN THE BLACK BOX"},
     {t:"equity",text:"NOTHING ABOUT US WITHOUT US"},
     {t:"economy",text:"PUBLIC GOODS, NOT MONOPOLIES"},
-    {t:"creativity",text:"REST IS OUR RIGHT"},
-    {t:"rights",text:"AI, STOP STEALING OUR WORK"},
-    {t:"policy",text:"YOU SAY INNOVATION, WE SAY ITS EXPLOITATION"}
+    {t:"rights",text:"THE RIGHT TO REFUSE"},
+    {t:"data",text:"TRANSPARENCY IN WORKER DATA"},
+    {t:"economy",text:"DIGITAL SOLIDARITY ECONOMIES"}
 ];
 
 const canvas=document.getElementById('constellation-canvas');
@@ -665,17 +685,58 @@ function animate(){
             }
         }
         if(!p1.locked){p1.x+=p1.vx;p1.y+=p1.vy;}
+        
+        let isDimmed=currentMode==='constellation'&&activeFilter&&p1.category!==activeFilter;
         ctx.beginPath();
-        ctx.arc(p1.x,p1.y,p1.radius,0,Math.PI*2);
-        ctx.fillStyle=p1.color;
+        ctx.arc(p1.x,p1.y,isDimmed?1:p1.radius,0,Math.PI*2);
+        
+        if(p1.hovered||p1===selectedNode){
+            ctx.shadowBlur=15;
+            ctx.shadowColor=p1.color;
+            ctx.fillStyle='#ffffff';
+        } else {
+            ctx.shadowBlur=0;
+            ctx.fillStyle=isDimmed?'#333':p1.color;
+        }
         ctx.fill();
+        ctx.shadowBlur=0;
+        
+        if(currentMode==='constellation'&&p1.isSlogan&&!isDimmed){
+            ctx.font='bold 11px Courier New';
+            ctx.fillStyle=p1.color;
+            ctx.textAlign='center';
+            ctx.fillText(p1.text,p1.x,p1.y-14);
+        }
     }
 }
 
 canvas.addEventListener('mousemove',(e)=>{
     if(document.getElementById('crossword-panel').classList.contains('open'))return;
     mouse.x=e.clientX;mouse.y=e.clientY;
+    let hovering=false;
+    const tooltip=document.getElementById('tooltip');
+    for(let i=nodes.length-1;i>=0;i--){
+        let node=nodes[i];
+        let dx=mouse.x-node.x,dy=mouse.y-node.y;
+        if(Math.abs(dx)>20||Math.abs(dy)>20){node.hovered=false;continue;}
+        let dist=Math.sqrt(dx*dx+dy*dy);
+        const hitDist=node.isSlogan?30:15;
+        if(dist<hitDist){
+            node.hovered=true;hovering=true;
+            if(!node.isSlogan&&currentMode==='constellation'){
+                tooltip.style.display='block';
+                tooltip.style.left=(e.clientX+15)+'px';tooltip.style.top=(e.clientY+15)+'px';
+                tooltip.innerText=themes[node.category].label;
+                tooltip.style.borderColor=node.color;
+            }
+            break;
+        } else {node.hovered=false;}
+    }
+    if(!hovering)tooltip.style.display='none';
+    canvas.style.cursor=hovering?'pointer':'default';
 });
+canvas.addEventListener('mouseleave',()=>{mouse.x=null;mouse.y=null;});
+
 canvas.addEventListener('click',(e)=>{
     if(document.getElementById('crossword-panel').classList.contains('open'))return;
     for(let i=nodes.length-1;i>=0;i--){
@@ -700,63 +761,45 @@ window.onload=()=>{resize();animate();};
 //  RECONFIGURED CROSSWORD ENGINE
 // ══════════════════════════════════════════════════════
 
+// Translated from the perfected interlocking LaTeX coordinates:
 const XW_WORDS = [
-    // SPINE 1: Digital Solidarity Economies
-    {word:"DIGITALSOLIDARITYECONOMIES", row:10, col:1, dir:"H", num:12, theme:"economy"},
-    
-    // Intersections for Spine 1
-    // (10,5) is 'T'
-    {word:"CREATIVECOMMONS", row:6, col:5, dir:"V", num:6, theme:"data"}, 
-    // (10,6) is 'A' (index 5 of WHATSAPP)
-    {word:"WHATSAPP", row:5, col:6, dir:"V", num:2, theme:"democracy"},
-    // (10,20) is 'O' (index 2 of PROFIT)
-    {word:"PROFIT", row:8, col:20, dir:"V", num:3, theme:"economy"},
-    // (10,25) is 'E' (index 5 of DATACENTERS)
-    {word:"DATACENTERS", row:5, col:25, dir:"V", num:1, theme:"environment"},
-
-    // Spine 3 Intersection
-    // Intersects DATACENTERS at index 7 (T) -> Row (5+7)=12, Col 25
-    {word:"PARTICIPATORY", row:12, col:16, dir:"H", num:10, theme:"democracy"},
-    // Also intersects PROFIT at (12,20) -> index 4 of PROFIT is 'I', index 4 of PARTICIPATORY is 'I'
-
-    // SPINE 2: Intellectual Property (Moved to Row 22 to avoid CreativeCommons)
-    {word:"INTELLECTUALPROPERTY", row:22, col:1, dir:"H", num:15, theme:"creativity"},
-    
-    // Intersections for Spine 2
-    // (22,13) is 'P' (index 3 of COOPYLEFT)
-    {word:"COOPYLEFT", row:19, col:13, dir:"V", num:13, theme:"rights"},
-    // (22,14) is 'R' (index 1 of ARTEESETICA)
-    {word:"ARTEESETICA", row:21, col:14, dir:"V", num:16, theme:"environment"},
-
-    // Safe placements (No clashing intersections)
-    {word:"WRITER", row:2, col:10, dir:"H", num:7, theme:"creativity"},
-    {word:"UNIONIZED", row:4, col:10, dir:"H", num:9, theme:"democracy"},
-    {word:"COOPCYCLE", row:8, col:10, dir:"H", num:5, theme:"economy"},
-    {word:"SUBVERT", row:14, col:3, dir:"V", num:11, theme:"economy"},
-    {word:"INTERCOOPERATION", row:26, col:1, dir:"H", num:14, theme:"economy"},
-    {word:"MESH", row:2, col:2, dir:"V", num:8, theme:"economy"},
-    {word:"GAMING", row:2, col:24, dir:"V", num:4, theme:"democracy"},
+    {word:"DATACENTERS",                row:5,  col:25, dir:"V", num:1,  theme:"environment"},
+    {word:"WHATSAPP",                   row:5,  col:13, dir:"V", num:2,  theme:"democracy"},
+    {word:"PROFIT",                     row:8,  col:20, dir:"V", num:3,  theme:"economy"},
+    {word:"GAMING",                     row:6,  col:24, dir:"H", num:4,  theme:"democracy"},
+    {word:"COOPCYCLE",                  row:26, col:2,  dir:"H", num:5,  theme:"economy"},
+    {word:"CREATIVECOMMONS",            row:6,  col:5,  dir:"V", num:6,  theme:"data"},
+    {word:"WRITER",                     row:4,  col:27, dir:"V", num:7,  theme:"creativity"},
+    {word:"MESH",                       row:25, col:10, dir:"V", num:8,  theme:"economy"},
+    {word:"UNIONIZED",                  row:27, col:15, dir:"H", num:9,  theme:"democracy"},
+    {word:"PARTICIPATORY",              row:12, col:16, dir:"H", num:10, theme:"democracy"},
+    {word:"SUBVERT",                    row:20, col:5,  dir:"H", num:11, theme:"economy"},
+    {word:"DIGITALSOLIDARITYECONOMIES", row:10, col:1,  dir:"H", num:12, theme:"economy"},
+    {word:"COPYLEFT",                   row:20, col:13, dir:"V", num:13, theme:"rights"},
+    {word:"INTERCOOPERATION",           row:21, col:2,  dir:"V", num:14, theme:"economy"},
+    {word:"INTELLECTUALPROPERTY",       row:22, col:1,  dir:"H", num:15, theme:"creativity"},
+    {word:"ARTEESETICA",                row:19, col:17, dir:"V", num:16, theme:"environment"}
 ];
 
 const XW_CLUES = {
    across:{
-       5: " federation of bike logistics messengers in Europe that aims to reduce carbon emissions in urban logistics transport. It has developed a platform that supports worker-owned bike delivery cooperatives",
-       7: "The 2023 Hollywood writers’ Memorandum of Agreement states that generative AI cannot be recognised as a  ___",
+       4: "In what industry did workers at Bethesda Studios unionise in 2024, join the Communications Workers of America, and gain recognition from Microsoft?",
+       5: "Federation of bike logistics messengers in Europe that aims to reduce carbon emissions in urban logistics transport. It has developed a platform that supports worker-owned bike delivery cooperatives",
        9: "Seize the Means Video Co-op, based in Vancouver, is an example of a ____ worker Cooperative. Apart from ensuring worker ownership, they also have collective agreements as an additional layer of protection and checks and balances for worker-members.",
        10:"Workers Inquiry as a Research Methodology (WIRM) emphasizes a ___, worker-led approach that centers workers’ knowledge, fosters self-expression, and strengthens organizing capacity",
+       11:"Cooperative building a Bandcamp-style marketplace owned and controlled by artists, labels, supporters, and workers. They envision an organizational structure where a cooperative wholly owns a corporation, maintaining collective control while allowing it to raise funds for future goals",
        12:"The diverse practices, technologies, and organisational forms that challenge extractive models of the digital economy by embedding principles of cooperation, mutual aid, and shared ownership into data governance, platforms, and artificial intelligence is identified as ?",
-       14:"The solidarity principle emphasising collaboration, shared resources, and mutual support between cooperatives, as demonstrated by Argentine Federation of Worker Cooperatives in Technology, Innovation and Knowledge (FACTTIC) when adapting the CoopCycle delivery platform for Argentina is called",
        15:"What artists seek to protect when AI uses their work without permission", 
    },
    down:{
        1: "In Colón, Mexico, severe ecological crises including water shortages are caused by the installation of multiple ______",
        2: "The Tech Sector of the Homeless Worker Movement in Brazil (MTST)’s Hire Who Fights' initiative uses which communication tool to connect workers with jobs?",
        3: "What Stocksy prioritises human value over the pursuit of",
-       4: "In what industry did workers at Bethesda Studios unionise in 2024, join the Communications Workers of America, and gain recognition from Microsoft?",
        6: "A flexible copyright licence that lets creators legally share, adapt, and distribute their work while specifying which rights they retain, encouraging open access to creative content",
+       7: "The 2023 Hollywood writers’ Memorandum of Agreement states that generative AI cannot be recognised as a  ___",
        8: "The __ cooperativism emphasises networks of loosely-affiliated, interoperable, local-scale systems",
-       11:"Cooperative building a Bandcamp-style marketplace owned and controlled by artists, labels, supporters, and workers. They envision an organizational structure where a cooperative wholly owns a corporation, maintaining collective control while allowing it to raise funds for future goals",
        13:"A licence that allows only cooperatives or non-profit projects to use the software. It protects collective work from appropriation by capitalist actors while encouraging its circulation within solidarity networks",
+       14:"The solidarity principle emphasising collaboration, shared resources, and mutual support between cooperatives, as demonstrated by Argentine Federation of Worker Cooperatives in Technology, Innovation and Knowledge (FACTTIC) when adapting the CoopCycle delivery platform for Argentina is called",
        16:"Non-profit collective founded in 2022 by Latin American and Spanish creatives to address generative AI’s impact on human creativity and the ecological effects of data centers.",
    }
 };
@@ -826,6 +869,11 @@ let xwActiveCell=null,xwDir='H',xwActiveNum=null;
 
 function xwGetCell(r,c){return document.querySelector(`#crossword-panel td[data-r="${r}"][data-c="${c}"]`);}
 function xwGetInput(r,c){return document.querySelector(`#crossword-panel input[data-r="${r}"][data-c="${c}"]`);}
+
+function xwCurrentTheme(){
+    if(!xwActiveNum)return'';
+    const w=xwWordMap[xwActiveNum+xwDir];return w?w.theme:'';
+}
 
 function xwSelectCell(r,c){
     const k=r+','+c;if(!xwCells[k])return;
